@@ -6,32 +6,30 @@ import tornado.gen
 
 import config
 
-class MandrillEmailHandler(object):
+class SendgridEmailHandler(object):
 
 	def __init__(self, logger):
 		self.log = logger
 		if not self.log:
-			self.log = logger.init_logger("mandrill")
+			self.log = logger.init_logger("sendgrind")
 
 		self.http_client = AsyncHTTPClient()
 
 	@tornado.gen.engine
 	def send_email(self, callback):
 		mail_data = {
-			"key": config.MANDRILL_KEY,
-			"message": {
-				"html": "html email from tornado sample app <b>bold</b>",
-				"text": "plain text email from tornado sample app",
-				"subject": "from tornado sample app",
-				"from_email": "hello@example.com",
-				"from_name": "Hello Team",
-				"to":[{"email": "lukasz.harezlak@gmail.com"}]
-			}
+			"api_user": config.SENDGRIND_USERNAME,
+			"api_key": config.SENDGRIND_KEY,
+			"to":"lukasz.harezlak@gmail.com",
+			"toname": "Lukasz",
+			"subject": "Example_Subject",
+			"text": "testingtextbody",
+			"from": "lukasz.harezlak@gmail.com"
 		}
 		body = tornado.escape.json_encode(mail_data)
 
 		response = yield tornado.gen.Task(
-			self.http_client.fetch, config.MANDRILL_URL + "/messages/send.json",
+			self.http_client.fetch, config.SENDGRIND_URL + "/mail.send.json",
 			method='POST', body=body
 		)
 		self.log.info(response)

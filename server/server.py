@@ -11,7 +11,7 @@ import uuid
 import config
 import logger
 import db
-import email_handlers.email_handler as eh
+import email_handlers.main_email_handler as eh
 
 ##############################################################################
 # MAIN APPLICATION CLASS
@@ -207,7 +207,7 @@ if __name__ == '__main__':
     main_db = db.RedisDb(main_logger)
 
     global email_handler
-    main_email_handler = eh.EmailHandler(main_logger)
+    main_email_handler = eh.MainEmailHandler(main_logger)
 
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(config.PORT)
