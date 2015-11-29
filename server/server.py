@@ -5,11 +5,13 @@ import tornado.ioloop
 import tornado.httpserver
 import tornado.escape
 import tornado.web
+import tornado.gen
 import uuid
 
 import config
 import logger
 import db
+import email_handlers.email_handler as eh
 
 ##############################################################################
 # MAIN APPLICATION CLASS
@@ -20,7 +22,7 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             # TODO make sure this works as expected
-            (r"/email/.*",  EmailHandler),
+            (r"/email/*",  EmailHandler),
             (r"/*",         MainHandler),
             (r".*",         DefaultHandler)
         ]
@@ -67,6 +69,10 @@ class AjaxResponse(object):
 
 class BaseHandler(tornado.web.RequestHandler):
 
+    def check_xsrf_cookie(self):
+        # TODO REMOVE AFTER TESTING
+        pass
+
     SUPPORTED_METHODS = ("GET", "POST")
 
     def write(self, *args, **kwargs):
@@ -109,11 +115,11 @@ class MainHandler(BaseHandler):
 
 class EmailHandler(BaseHandler):
 
-    @tornado.web.removeslash
+    # @tornado.web.removeslash
     def get(self):
         try:
             response = AjaxResponse()
-            # main_logger.debug("Requested exchange rate for %s and %s." % (curr_from, curr_to))
+            main_logger.debug("Requested emails list")
 
             status = "ok"
             response.add_code(config.RESPONSE_OK)
@@ -128,6 +134,44 @@ class EmailHandler(BaseHandler):
             response = tornado.escape.json_encode(
             	response.get())
             self.write(response)
+            self.finish()
+
+    # @tornado.web.removeslash
+    @tornado.web.asynchronous
+    @tornado.gen.engine
+    def post(self):
+        global main_email_handler
+        try:
+            response = AjaxResponse()
+            to_addr  = self.get_argument('to', None)
+            cc_addr  = self.get_argument('cc', None)
+            bcc_addr = self.get_argument('bcc', None)
+            topic    = self.get_argument('topic', None)
+            text     = self.get_argument('text', None)
+            author   = self.get_argument('author', None)
+
+            # TODO VALIDATE
+
+            main_logger.debug('requesting')
+            success = yield tornado.gen.Task(
+                main_email_handler.send_email, "TEST"
+            )
+            main_logger.debug(success)
+
+            # prepare response
+            if success:
+                response.add_code(config.RESPONSE_OK)
+            else:
+                response.add_code(config.RESPONSE_ERROR)
+                response.add_msg("Invite not set as clicked.")
+
+        except Exception, e:
+            main_logger.exception(e)
+            response.add_code(config.RESPONSE_ERROR)
+        finally:
+            json_ = tornado.escape.json_encode(response.get())
+            main_logger.info('Sending JSON response: %s' % str(json_))
+            self.write(json_)
             self.finish()
 
 
@@ -167,6 +211,9 @@ if __name__ == '__main__':
 
     global main_db
     main_db = db.RedisDb(main_logger)
+
+    global email_handler
+    main_email_handler = eh.EmailHandler(main_logger)
 
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(config.PORT)
