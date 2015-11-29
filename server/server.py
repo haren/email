@@ -9,6 +9,7 @@ import uuid
 
 import config
 import logger
+import db
 
 ##############################################################################
 # MAIN APPLICATION CLASS
@@ -163,6 +164,9 @@ if __name__ == '__main__':
 
     global main_logger
     main_logger = logger.init_logger('main')
+
+    global main_db
+    main_db = db.RedisDb(main_logger)
 
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(config.PORT)
