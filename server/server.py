@@ -158,19 +158,11 @@ class EmailHandler(BaseHandler):
             )
             main_logger.debug(success)
 
-            # prepare response
-            if success:
-                response.add_code(config.RESPONSE_OK)
-            else:
-                response.add_code(config.RESPONSE_ERROR)
-                response.add_msg("Invite not set as clicked.")
-
         except Exception, e:
             main_logger.exception(e)
             response.add_code(config.RESPONSE_ERROR)
         finally:
             json_ = tornado.escape.json_encode(response.get())
-            main_logger.info('Sending JSON response: %s' % str(json_))
             self.write(json_)
             self.finish()
 

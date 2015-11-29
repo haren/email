@@ -1,8 +1,8 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import redis
-
 import config
+import logger
 
 class RedisDb(object):
 
@@ -13,7 +13,7 @@ class RedisDb(object):
 	def __init__(self, logger=None):
 		self.log = None
 		if logger is None:
-			self.log = im_logging.init_logging("db")
+			self.log = logger.init_logger("db")
 		else:
 			self.log = logger
 
