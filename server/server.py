@@ -158,6 +158,9 @@ class EmailHandler(BaseHandler):
             )
             main_logger.debug(success)
 
+
+            # save result to the database in separate method
+
         except Exception, e:
             main_logger.exception(e)
             response.add_code(config.RESPONSE_ERROR)
@@ -197,7 +200,6 @@ class DefaultHandler(BaseHandler):
 ##############################################################################
 
 if __name__ == '__main__':
-
     global main_logger
     main_logger = logger.init_logger('main')
 

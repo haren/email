@@ -15,6 +15,12 @@ REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
 REDIS_DB   = 0
 
+##############################################################################
+# EMAIL
+##############################################################################
+MANDRILL_URL = "https://mandrillapp.com/api/1.0/"
+MANDRILL_KEY = "FILL_IN_THE_KEY"
+
 # when running in docker container this needs to be changed to the
 # docker VM IP, e.g. on Mac can be looked up (depeneding on the used tool) using:
 # docker-machine ip dev
