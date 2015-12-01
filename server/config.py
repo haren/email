@@ -25,6 +25,10 @@ SENDGRID_URL      = "https://api.sendgrid.com/api"
 SENDGRID_USERNAME = "FILL_IN_USERNAME"
 SENDGRID_KEY      = "FILL_IN_THE_KEY"
 
+MAILGUN_USERNAME 	= "FILL_IN_USERNAME"
+MAILGUN_URL 		= "https://api.mailgun.net/v3/%s.mailgun.org" % MAILGUN_USERNAME
+MAILGUN_KEY 		= "FILL_IN_THE_KEY"
+
 
 # when running in docker container this needs to be changed to the
 # docker VM IP, e.g. on Mac can be looked up (depeneding on the used tool) using:
