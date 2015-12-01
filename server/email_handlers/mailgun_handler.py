@@ -3,8 +3,7 @@ import tornado.web
 import tornado.gen
 
 import requests
-from trequests import setup_session
-from tornalet import tornalet
+import json
 
 import config
 
@@ -19,52 +18,59 @@ class MailgunEmailHandler(object):
 
 	@tornado.gen.engine
 	def send_email(self, callback):
-		"""This is handled slightly differently because of mailgun responds internally."""
-		request_url = config.MAILGUN_URL + '/messages'
-		response = requests.post(
-			request_url, auth=('api', config.MAILGUN_KEY),
-			data= {
-			    'from': "lukasz.harezlak@gmail.com",
-			    'to': 'lukasz.harezlak@gmail.com',
-			    'subject': 'Hello',
-			    'text': 'Hello from Mailgun'
-			}
-		)
+		"""This is handled slightly differently than other mailing libraries
+		because of how mailgun responds internally."""
 
-		# # self.log.info('Status: {0}'.format(response.status_code))
-		# # self.log.info('Body:   {0}'.format(response.text))
-		# mail_data = {
-		# 	'from': "lukasz.harezlak@gmail.com",
-		#     'to': 'lukasz.harezlak@gmail.com',
-		#     'subject': 'Hello',
-		#     'text': 'Hello from Mailgun'
-		# 	# "auth": {
-		# 	# 	"api": config.MAILGUN_KEY
-		# 	# },
-		# 	# "data": {
-		# 		# # "html": "html email from tornado sample app <b>bold</b>",
-		# 		# "text": "plain text email from tornado sample app",
-		# 		# "subject": "from tornado sample app",
-		# 		# "from": "lukasz.harezlak@gmail.com",
-		# 		# # "from_name": "Hello Team",
-		# 		# "to": "lukasz.harezlak@gmail.com",
-		# 		# "user": "api:%s" % config.MAILGUN_KEY
-		# 	# }
-		# }
-		# body = tornado.escape.json_encode(mail_data)
+		email_id = self._register_send_email()
+		if not email_id:
+			# sending email failed, check logs for details
+			callback(config.SEND_STATUS.FAILED)
+			return
+		# email_id = "20151201133920.22378.96073@sandbox5189b287fda64434a9c7f590524810a8.mailgun.org"
 
-		# self.log.info(body)
+		# request_url = config.MAILGUN_URL + '/events'
+		# response = requests.get(request_url, auth=('api', config.MAILGUN_KEY), params={'limit': 5})
 
-		# response = yield tornado.gen.Task(
-		# 	self.http_client.fetch, config.MAILGUN_URL + "/messages",
-		# 	method='POST', body=body, auth_username='api', auth_password=config.MAILGUN_KEY
-		# )
+		# sent_success = self._get_email_send_status(email_id)
 
-		request_url = config.MAILGUN_URL + '/events'
-		response = requests.get(request_url, auth=('api', config.MAILGUN_KEY), params={'limit': 5})
+		# self.log.info(response.text)
+		# self.log.info(response.status_code)
 
-		self.log.info(response.text)
-		self.log.info(response.status_code)
+		callback(config.SEND_STATUS.QUEUED)
 
-		callback(response)
-		# self.finish(response)
+	def _register_send_email(self):
+		email_text = 'Hello from Mailgun'
+		try:
+			# IMPORTANT: this is a blocking request so set the timeout on 1s.
+			request_url = config.MAILGUN_URL + '/messages'
+			response = requests.post(
+				request_url, auth=('api', config.MAILGUN_KEY),
+				data= {
+				    'from': "lukasz.harezlak@gmail.com",
+				    'to': 'lukasz.harezlak@gmail.com',
+				    'subject': 'Hello',
+				    'text': email_text
+				},
+				timeout = config.BLOCKING_TIMEOUT
+			)
+
+			if int(response.status_code) == config.RESPONSE_OK:
+				response = json.loads(response.text)
+				return response['id'].replace('<', '').replace('>', '')
+			return None
+
+		except (requests.ConnectionError, requests.Timeout), e:
+			self.log.error(
+				"Failed to send email %s using mailgun. Connection Error/Timeout: %s"
+				% (email_text, e)
+			)
+			return None
+		except Exception, e:
+			self.log.error(
+				"Failed to send email %s using mailgun. Mal-formatted Data/Unknown Exception: %s"
+				% (email_text, e)
+			)
+			return None
+
+	# def _get_email_send_status(self, email_id):
+	# 	# http://nullege.com/codes/search/tornado.gen.with_timeout

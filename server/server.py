@@ -156,7 +156,7 @@ class EmailHandler(BaseHandler):
             success = yield tornado.gen.Task(
                 main_email_handler.send_email, "TEST"
             )
-            main_logger.debug(success)
+            main_logger.debug("===========> %s" % success)
 
 
             # save result to the database in separate method
