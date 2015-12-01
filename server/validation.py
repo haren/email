@@ -1,19 +1,24 @@
 #!/bin/env python
-import re
+
+from validate_email import validate_email
 
 class Validator(object):
 
-	def __init__(self):
-		self.email_regex = re.compile('[^@]+@[^@]+\.[^@]+')
-
 	def is_valid_email_address(self, addr):
-		"""Performs basic syntactic email validation.
+		"""Checks  if the host has SMTP Server and the email really exists
+		Source: https://pypi.python.org/pypi/validate_email
+
 		Expects a single string, returns boolean."""
-		return addr is not None and self.email_regex.match(addr)
+		# the call is blocking, so only syntactic analysis performed
+		# To check if the SMTP server exists change check_mx to True
+		# to check if email address exists change verify to true
+		return addr is not None and validate_email(addr, verify=False, check_mx=False)
 
 	def are_valid_email_addresses(self, addr_list):
-		"""Performs basic syntactic email validation on a list of emails.
+		"""Performs basic syntactic email validation on a list of emails
+		passed as a comma separated string.
 		Expects a list, returns boolean."""
+		addr_list = str(addr_list).split(',')
 		for addr in addr_list:
 			if not self.is_valid_email_address(addr):
 				return False
