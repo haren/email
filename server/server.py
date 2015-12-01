@@ -12,6 +12,7 @@ import config
 import logger
 import db
 import email_handlers.main_email_handler as eh
+import validation
 
 ##############################################################################
 # MAIN APPLICATION CLASS
@@ -141,16 +142,62 @@ class EmailHandler(BaseHandler):
     @tornado.gen.engine
     def post(self):
         global main_email_handler
+        global validator
         try:
-            response = AjaxResponse()
-            to_addr  = self.get_argument('to', None)
-            cc_addr  = self.get_argument('cc', None)
-            bcc_addr = self.get_argument('bcc', None)
-            topic    = self.get_argument('topic', None)
-            text     = self.get_argument('text', None)
-            author   = self.get_argument('author', None)
+            response  = AjaxResponse()
+            user_id   = self.get_current_user()
+            to_addr   = self.get_argument('to', None)
+            cc_addr   = self.get_argument('cc', None)
+            bcc_addr  = self.get_argument('bcc', None)
+            topic     = self.get_argument('topic', None)
+            text      = self.get_argument('text', None)
 
-            # TODO VALIDATE
+            # perform necessary validations
+            main_logger.info(to_addr)
+            if not validator.is_valid_email_address(to_addr):
+                main_logger.debug(
+                    'Incorrect to_addr %s submitted by user %s'
+                    % (to_addr, user_id))
+                response.add_code(config.RESPONSE_ERROR)
+                response.add_msg('Invalid main recipient.')
+                return
+                yield
+
+            if cc_addr and len(cc_addr) and not validator.are_valid_email_addresses(cc_addr):
+                main_logger.debug(
+                    'Incorrect cc_addr list %s submitted by user %s'
+                    % (cc_addr, user_id))
+                response.add_code(config.RESPONSE_ERROR)
+                response.add_msg('At least one of cc recipients invalid.')
+                return
+                yield
+
+            if bcc_addr and len(bcc_addr) and not validator.are_valid_email_addresses(bcc_addr):
+                main_logger.debug(
+                    'Incorrect bcc_addr list %s submitted by user %s'
+                    % (bcc_addr, user_id))
+                response.add_code(config.RESPONSE_ERROR)
+                response.add_msg('At least one of bcc recipients invalid.')
+                return
+                yield
+
+            if not topic or not len(topic):
+                main_logger.debug(
+                    'Empty topic submitted by user %s'
+                    % (user_id))
+                response.add_code(config.RESPONSE_ERROR)
+                response.add_msg('Topic cannot be empty.')
+                return
+                yield
+
+            if not text or not len(text):
+                main_logger.debug(
+                    'Empty text submitted by user %s'
+                    % (user_id))
+                response.add_code(config.RESPONSE_ERROR)
+                response.add_msg('Text cannot be empty.')
+                return
+                yield
 
             main_logger.debug('requesting')
             success = yield tornado.gen.Task(
@@ -208,6 +255,9 @@ if __name__ == '__main__':
 
     global email_handler
     main_email_handler = eh.MainEmailHandler(main_logger)
+
+    global validator
+    validator = validation.Validator()
 
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(config.PORT)

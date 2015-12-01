@@ -33,4 +33,3 @@ class MainEmailHandler(object):
 			self.mailgun.send_email
 		)
 		callback(result)
-		# self.finish()
