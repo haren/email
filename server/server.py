@@ -171,6 +171,9 @@ class EmailHandler(BaseHandler):
                 response.add_msg('At least one of cc recipients invalid.')
                 return
                 yield
+            # # valid, convertion safe
+            if cc_addr and len(cc_addr):
+                cc_addr = str(cc_addr).split(',')
 
             if bcc_addr and len(bcc_addr) and not validator.are_valid_email_addresses(bcc_addr):
                 main_logger.debug(
@@ -180,6 +183,9 @@ class EmailHandler(BaseHandler):
                 response.add_msg('At least one of bcc recipients invalid.')
                 return
                 yield
+            # # valid, convertion safe
+            if bcc_addr and len(bcc_addr):
+                bcc_addr = str(bcc_addr).split(',')
 
             if not topic or not len(topic):
                 main_logger.debug(

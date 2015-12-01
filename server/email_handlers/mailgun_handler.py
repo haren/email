@@ -12,7 +12,7 @@ class MailgunEmailHandler(object):
 	def __init__(self, logger):
 		self.log = logger
 		if not self.log:
-			self.log = logger.init_logger("mandrill")
+			self.log = logger.init_logger("mailgun")
 
 		self.http_client = AsyncHTTPClient()
 
@@ -45,8 +45,6 @@ class MailgunEmailHandler(object):
 				},
 				timeout = config.BLOCKING_TIMEOUT
 			)
-
-			self.log.info(response.content)
 
 			if int(response.status_code) == config.RESPONSE_OK:
 				response = json.loads(response.text)
