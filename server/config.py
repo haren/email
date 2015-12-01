@@ -21,9 +21,9 @@ REDIS_DB   = 0
 MANDRILL_URL = "https://mandrillapp.com/api/1.0/"
 MANDRILL_KEY = "FILL_IN_THE_KEY"
 
-SENDGRIND_URL      = "https://sendgrid.com/api/"
-SENDGRIND_USERNAME = "haren"
-SENDGRIND_KEY      = "FILL_IN_THE_KEY"
+SENDGRID_URL      = "https://api.sendgrid.com/api"
+SENDGRID_USERNAME = "FILL_IN_USERNAME"
+SENDGRID_KEY      = "FILL_IN_THE_KEY"
 
 
 # when running in docker container this needs to be changed to the

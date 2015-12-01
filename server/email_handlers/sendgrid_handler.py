@@ -18,8 +18,8 @@ class SendgridEmailHandler(object):
 	@tornado.gen.engine
 	def send_email(self, callback):
 		mail_data = {
-			"api_user": config.SENDGRIND_USERNAME,
-			"api_key": config.SENDGRIND_KEY,
+			"api_user": config.SENDGRID_USERNAME,
+			"api_key": config.SENDGRID_KEY,
 			"to":"lukasz.harezlak@gmail.com",
 			"toname": "Lukasz",
 			"subject": "Example_Subject",
@@ -29,7 +29,7 @@ class SendgridEmailHandler(object):
 		body = tornado.escape.json_encode(mail_data)
 
 		response = yield tornado.gen.Task(
-			self.http_client.fetch, config.SENDGRIND_URL + "/mail.send.json",
+			self.http_client.fetch, config.SENDGRID_URL + "/mail.send.json",
 			method='POST', body=body
 		)
 		self.log.info(response)
