@@ -23,13 +23,14 @@ class MainEmailHandler(object):
 		self.mailgun  = MailgunEmailHandler(self.log)
 
 	@tornado.gen.engine
-	def send_email(self, text, callback):
+	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, callback):
 		self.log.debug("Starting")
 
 		result = yield tornado.gen.Task(
 			# self.mandrill.send_email
 			# self.sendgrid.send_email
-			# self.ses.send_email
-			self.mailgun.send_email
+			self.ses.send_email,
+			# self.mailgun.send_email,
+			to_addr, cc_addr, bcc_addr, topic, text
 		)
 		callback(result)

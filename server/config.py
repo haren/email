@@ -26,6 +26,8 @@ REDIS_DB   = 0
 ##############################################################################
 # EMAIL CONFIG
 ##############################################################################
+FROM_ADDRESS = "lukasz.harezlak@gmail.com"
+
 MANDRILL_URL = "https://mandrillapp.com/api/1.0/"
 MANDRILL_KEY = "FILL_IN_THE_KEY"
 

@@ -23,7 +23,7 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             # TODO make sure this works as expected
-            (r"/email/*",  EmailHandler),
+            (r"/email/*",   EmailHandler),
             (r"/*",         MainHandler),
             (r".*",         DefaultHandler)
         ]
@@ -199,12 +199,12 @@ class EmailHandler(BaseHandler):
                 return
                 yield
 
-            main_logger.debug('requesting')
             success = yield tornado.gen.Task(
-                main_email_handler.send_email, "TEST"
+                main_email_handler.send_email,
+                to_addr, cc_addr, bcc_addr,
+                topic, text
             )
             main_logger.debug("===========> %s" % success)
-
 
             # save result to the database in separate method
 
