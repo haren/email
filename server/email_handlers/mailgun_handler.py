@@ -38,11 +38,15 @@ class MailgunEmailHandler(object):
 				data = {
 				    'from': config.FROM_ADDRESS,
 				    'to': to_addr,
+				    'cc': cc_addr,
+				    'bcc': bcc_addr,
 				    'subject': topic,
 				    'text': text
 				},
 				timeout = config.BLOCKING_TIMEOUT
 			)
+
+			self.log.info(response.content)
 
 			if int(response.status_code) == config.RESPONSE_OK:
 				response = json.loads(response.text)
