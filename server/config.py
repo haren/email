@@ -1,5 +1,7 @@
 #!/bin/env python
 
+from enum import Enum
+
 ##############################################################################
 # REST SERVER
 ##############################################################################
@@ -40,6 +42,9 @@ MAILGUN_USERNAME 	= "FILL IN USERNAME"
 MAILGUN_URL 		= "https://api.mailgun.net/v3/%s.mailgun.org" % MAILGUN_USERNAME
 MAILGUN_KEY 		= "FILL_IN_THE_KEY"
 
+# EMAIL_HANDLERS = Enum('EMAIL_HANDLERS', 'MANDRILL MAILGUN SES SENDGRID')
+EMAIL_HANDLERS = Enum('EMAIL_HANDLERS', 'MANDRILL MAILGUN SES')
+
 ##############################################################################
 # EMAIL TIMEOUTS
 ##############################################################################
@@ -54,12 +59,7 @@ BLOCKING_TIMEOUT = 1
 ##############################################################################
 # EMAIL SEND STATUS
 ##############################################################################
-enum = lambda **enums: type('Enum', (), enums) # simulate enums
-SEND_STATUS = enum(
-	SENT=2,
-	QUEUED=1,
-	FAILED=0,
-)
+SEND_STATUS = Enum('SEND_STATUS', 'SENT QUEUED FAILED')
 
 # when running in docker container this needs to be changed to the
 # docker VM IP, e.g. on Mac can be looked up (depeneding on the used tool) using:

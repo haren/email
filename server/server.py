@@ -260,7 +260,7 @@ if __name__ == '__main__':
     main_db = db.RedisDb(main_logger)
 
     global email_handler
-    main_email_handler = eh.MainEmailHandler(main_logger)
+    main_email_handler = eh.MainEmailHandler(main_db, main_logger)
 
     global validator
     validator = validation.Validator()

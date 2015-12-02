@@ -42,3 +42,23 @@ class RedisDb(object):
 
 	def save_user_sent_email(self, email):
 		return True
+
+
+	#############################################################################
+	# EMAIL HANDLERS FUNCTIONALITY
+	#############################################################################
+
+	def init_email_handlers(self, email_handlers):
+		registered_handlers = self.db_r.lrange('handlers', 0, -1)
+		for handler in email_handlers:
+			if str(handler.value) not in registered_handlers:
+				self.db_r.lpush('handlers', handler.value)
+		return
+
+	def get_email_handler_and_rotate(self):
+		handler_value = self.db_r.rpoplpush('handlers', 'handlers')
+
+		if not handler_value or not len(handler_value):
+			self.log.warning("Handlers not initalized in redis.")
+			return None
+		return int(handler_value)
