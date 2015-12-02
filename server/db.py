@@ -10,12 +10,8 @@ class RedisDb(object):
 	# CONNECTION INITIALIZATION
 	#############################################################################
 
-	def __init__(self, logger=None):
-		self.log = None
-		if logger is None:
-			self.log = logger.init_logger("db")
-		else:
-			self.log = logger
+	def __init__(self, main_logger=None):
+		self.log = main_logger or logger.init_logger("db")
 
 		self.db_r = redis.StrictRedis(
 			host	= config.REDIS_HOST,

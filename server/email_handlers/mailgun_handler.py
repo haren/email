@@ -6,13 +6,12 @@ import requests
 import json
 
 import config
+import logger
 
 class MailgunEmailHandler(object):
 
-	def __init__(self, logger):
-		self.log = logger
-		if not self.log:
-			self.log = logger.init_logger("mailgun")
+	def __init__(self, main_logger = None):
+		self.log = main_logger or logger.init_logger("mailgun")
 
 		self.http_client = AsyncHTTPClient()
 

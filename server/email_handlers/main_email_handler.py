@@ -13,9 +13,7 @@ from mailgun_handler 	import MailgunEmailHandler
 class MainEmailHandler(object):
 
 	def __init__(self, main_logger = None):
-		self.log = main_logger
-		if not self.log:
-			self.log = logger.init_logger("email")
+		self.log = main_logger or logger.init_logger("email")
 
 		self.mandrill = MandrillEmailHandler(self.log)
 		self.sendgrid = SendgridEmailHandler(self.log)
@@ -26,10 +24,15 @@ class MainEmailHandler(object):
 	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, callback):
 		self.log.debug("Starting")
 
+		# while status failed and not all tried
+			# pick a handler from round robin
+			# send
+			# if success / queued return
+
 		result = yield tornado.gen.Task(
-			self.mandrill.send_email,
+			# self.mandrill.send_email,
 			# self.sendgrid.send_email
-			# self.ses.send_email,
+			self.ses.send_email,
 			# self.mailgun.send_email,
 			to_addr, cc_addr, bcc_addr, topic, text
 		)

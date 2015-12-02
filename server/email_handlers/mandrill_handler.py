@@ -5,13 +5,12 @@ import tornado.web
 import tornado.gen
 
 import config
+import logger
 
 class MandrillEmailHandler(object):
 
-	def __init__(self, logger):
-		self.log = logger
-		if not self.log:
-			self.log = logger.init_logger("mandrill")
+	def __init__(self, main_logger = None):
+		self.log = main_logger or logger.init_logger("mandrill")
 
 		self.http_client = AsyncHTTPClient()
 
