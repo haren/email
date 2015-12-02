@@ -27,9 +27,9 @@ class MainEmailHandler(object):
 		self.log.debug("Starting")
 
 		result = yield tornado.gen.Task(
-			# self.mandrill.send_email
+			self.mandrill.send_email,
 			# self.sendgrid.send_email
-			self.ses.send_email,
+			# self.ses.send_email,
 			# self.mailgun.send_email,
 			to_addr, cc_addr, bcc_addr, topic, text
 		)

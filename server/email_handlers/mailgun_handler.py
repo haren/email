@@ -33,16 +33,12 @@ class MailgunEmailHandler(object):
 		try:
 			# IMPORTANT: this is a blocking request so set the timeout on 1s.
 			request_url = config.MAILGUN_URL + '/messages'
+			message     = self._prepare_message(to_addr, cc_addr, bcc_addr, topic, text)
+
 			response = requests.post(
-				request_url, auth = ('api', config.MAILGUN_KEY),
-				data = {
-				    'from': config.FROM_ADDRESS,
-				    'to': to_addr,
-				    'cc': cc_addr,
-				    'bcc': bcc_addr,
-				    'subject': topic,
-				    'text': text
-				},
+				request_url,
+				auth = ('api', config.MAILGUN_KEY),
+				data = message,
 				timeout = config.BLOCKING_TIMEOUT
 			)
 
@@ -63,6 +59,16 @@ class MailgunEmailHandler(object):
 				% (text, e)
 			)
 			return None
+
+	def _prepare_message(self, to_addr, cc_addr, bcc_addr, topic, text):
+		return {
+		    'from': config.FROM_ADDRESS,
+		    'to': to_addr,
+		    'cc': cc_addr,
+		    'bcc': bcc_addr,
+		    'subject': topic,
+		    'text': text
+		}
 
 	# def _get_email_send_status(self, email_id):
 	# 	# http://nullege.com/codes/search/tornado.gen.with_timeout

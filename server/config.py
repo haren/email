@@ -26,7 +26,8 @@ REDIS_DB   = 0
 ##############################################################################
 # EMAIL CONFIG
 ##############################################################################
-FROM_ADDRESS = "lukasz.harezlak@gmail.com"
+FROM_ADDRESS 	= "lukasz.harezlak@gmail.com"
+FROM_NAME 		= "Lukasz Harezlak"
 
 MANDRILL_URL = "https://mandrillapp.com/api/1.0/"
 MANDRILL_KEY = "FILL_IN_THE_KEY"
@@ -35,7 +36,7 @@ SENDGRID_URL      = "https://api.sendgrid.com/api"
 SENDGRID_USERNAME = "FILL_IN_USERNAME"
 SENDGRID_KEY      = "FILL_IN_THE_KEY"
 
-MAILGUN_USERNAME 	= "FILL_IN_USERNAME"
+MAILGUN_USERNAME 	= "FILL IN USERNAME"
 MAILGUN_URL 		= "https://api.mailgun.net/v3/%s.mailgun.org" % MAILGUN_USERNAME
 MAILGUN_KEY 		= "FILL_IN_THE_KEY"
 
@@ -56,8 +57,8 @@ BLOCKING_TIMEOUT = 1
 enum = lambda **enums: type('Enum', (), enums) # simulate enums
 SEND_STATUS = enum(
 	SENT=2,
-	FAILED=1,
-	QUEUED=0
+	QUEUED=1,
+	FAILED=0,
 )
 
 # when running in docker container this needs to be changed to the

@@ -28,7 +28,7 @@ class SesEmailHandler(object):
 		destination = self._prepare_destination(to_addr, cc_addr, bcc_addr)
 
 		response = yield tornado.gen.Task(self.ses_client.call,
-			Source="lukasz.harezlak@gmail.com", Message=message, Destination=destination
+			Source=config.FROM_ADDRESS, Message=message, Destination=destination
 		)
 
 		self.log.info(response)
