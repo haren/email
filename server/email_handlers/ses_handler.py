@@ -18,7 +18,7 @@ class SesEmailHandler(object):
 		self.log = main_logger or logger.init_logger("ses")
 
 		self.ses_client = Botocore(
-			service='ses', operation='SendEmail', region_name='us-west-2'
+			service='ses', operation='SendEmail', region_name='eu-west-1'
 		)
 
 	@tornado.gen.engine
@@ -29,9 +29,9 @@ class SesEmailHandler(object):
 		response = yield tornado.gen.Task(self.ses_client.call,
 			Source=config.FROM_ADDRESS, Message=message, Destination=destination
 		)
-
 		self.log.info(response)
 		callback(response)
+		return
 
 	def _prepare_message(self, topic, text):
 		return {
