@@ -120,11 +120,13 @@ class EmailHandler(BaseHandler):
     def get(self):
         try:
             response = AjaxResponse()
-            main_logger.debug("Requested emails list")
+            user_id  = self.get_current_user()
+            main_logger.debug("Requested emails list for user %s." % user_id)
 
-            status = "ok"
+            emails = main_db.get_user_sent_emails(user_id)
+
             response.add_code(config.RESPONSE_OK)
-            response.add_field('send_status', status)
+            response.add_field('emails', emails)
 
         except Exception, e:
             main_logger.exception("Rest server exception: %s" % e)

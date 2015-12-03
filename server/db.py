@@ -39,8 +39,22 @@ class RedisDb(object):
 	# EMAIL FUNCTIONALITY
 	#############################################################################
 
+	def get_email_data(self, handler_id, external_id):
+		return self.db_r.hgetall(
+			"email:%s:%s" % (handler_id, external_id))
+
 	def get_user_sent_emails(self, user_id):
-		return []
+		# if not user_id:
+		# 	return []
+
+		emails = []
+
+		# each one in format <HANDLER_ID>:<EXTERNAL_ID>
+		user_email_ids = self.db_r.smembers("emails:%s" % user_id)
+		for e_id in user_email_ids:
+			handler_id, external_id = e_id.split(':')
+			emails.append(self.get_email_data(handler_id, external_id))
+		return emails
 
 	def save_email(self, to_addr, cc_addr, bcc_addr, topic,
 					text, sender_id, handler_id, external_id, result):
