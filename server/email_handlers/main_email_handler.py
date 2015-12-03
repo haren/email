@@ -27,15 +27,17 @@ class MainEmailHandler(object):
 		self.db.init_email_handlers(config.EMAIL_HANDLERS)
 
 	@tornado.gen.engine
-	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, callback):
+	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, sender_id, callback):
 		"""Uses simple round robin to pick a handler."""
 		self.log.debug("Starting")
 
 		# try all handlers until once sends / queues message
 		for i in range(0, 3):
 			# obtain current handler, round-robin'ed
+			# current_handler = self.handlers.get(
+			# 	self.db.get_email_handler_and_rotate(), None)
 			current_handler = self.handlers.get(
-				self.db.get_email_handler_and_rotate(), None)
+				config.EMAIL_HANDLERS.MANDRILL.value, None)
 			if not current_handler:
 				self.log.warning("Couldn't obtain handler.")
 				callback(config.SEND_STATUS.FAILED)
@@ -47,9 +49,12 @@ class MainEmailHandler(object):
 				to_addr, cc_addr, bcc_addr, topic, text
 			)
 
-			self.log.info("===========>Attempting using %s" % current_handler)
-
 			if result != config.SEND_STATUS.FAILED:
+				# save sent email
+				# self.db.save_email(
+				# 	to_addr, cc_addr, bcc_addr, topic,
+				# 	text, sender_id, current_handler.value, result)
+
 				# only continue with the iterations if failed to send.
 				# reaching this close suggests sent / queued, function can exit
 				callback(result)
@@ -60,5 +65,11 @@ class MainEmailHandler(object):
 				"No handler managed to send an email %s to %s successfully."
 				% (topic, to_addr	)
 			)
+
+			# self.db.save_email(
+			# 	to_addr, cc_addr, bcc_addr, topic,
+			# 	text, sender_id, current_handler.value,
+			# 	config.SEND_STATUS.FAILED)
+
 			callback(config.SEND_STATUS.FAILED)
 			return

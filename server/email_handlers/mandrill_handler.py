@@ -3,6 +3,7 @@
 from tornado.httpclient import AsyncHTTPClient
 import tornado.web
 import tornado.gen
+import json
 
 import config
 import logger
@@ -30,13 +31,14 @@ class MandrillEmailHandler(object):
 			method='POST', body=body
 		)
 
-		self.log.info(response.body)
-
 		if int(response.code) == config.RESPONSE_OK:
-			callback(config.SEND_STATUS.SENT)
+			body = json.loads(response.body)
+			# Each sent email gets assigned a different id. First (To address) used.
+			email_id = body[0]['_id']
+			callback(config.SEND_STATUS.SENT, email_id)
 			return
 		else:
-			callback(config.SEND_STATUS.FAILED)
+			callback(config.SEND_STATUS.FAILED, None)
 			return
 
 

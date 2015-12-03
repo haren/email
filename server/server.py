@@ -152,6 +152,9 @@ class EmailHandler(BaseHandler):
             topic     = self.get_argument('topic', None)
             text      = self.get_argument('text', None)
 
+            # TODO MOVE THIS TO A SEPARATE VALIDATION FUNCTION
+            # RETURN (VALID, MESSAGE)
+
             # perform necessary validations
             main_logger.info(to_addr)
             if not validator.is_valid_email_address(to_addr):
@@ -205,12 +208,16 @@ class EmailHandler(BaseHandler):
                 return
                 yield
 
-            success = yield tornado.gen.Task(
+            cb_result = yield tornado.gen.Task(
                 main_email_handler.send_email,
                 to_addr, cc_addr, bcc_addr,
-                topic, text
+                topic, text, user_id
             )
-            main_logger.debug("===========> %s" % success)
+            # cb_result[0] - args, cb_result[1] - kwargs
+            # http://www.tornadoweb.org/en/stable/gen.html#tornado.gen.Arguments
+            success, external_id = cb_result[0][0], cb_result[0][1]
+
+            main_logger.info("%s %s" % (success, external_id))
 
             # save result to the database in separate method
 

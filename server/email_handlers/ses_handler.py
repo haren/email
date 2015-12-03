@@ -29,8 +29,14 @@ class SesEmailHandler(object):
 		response = yield tornado.gen.Task(self.ses_client.call,
 			Source=config.FROM_ADDRESS, Message=message, Destination=destination
 		)
-		self.log.info(response)
-		callback(response)
+		if (int(response['ResponseMetadata']['HTTPStatusCode'])
+				== config.RESPONSE_OK):
+			# SES always queues.
+			callback(config.SEND_STATUS.QUEUED, response['MessageId'])
+			return
+
+		# failed
+		callback(config.SEND_STATUS.FAILED, None)
 		return
 
 	def _prepare_message(self, topic, text):

@@ -24,9 +24,9 @@ class MailgunEmailHandler(object):
 			to_addr, cc_addr, bcc_addr, topic, text)
 		if not email_id:
 			# sending email failed, check logs for details
-			callback(config.SEND_STATUS.FAILED)
+			callback(config.SEND_STATUS.FAILED, None)
 			return
-		callback(config.SEND_STATUS.QUEUED)
+		callback(config.SEND_STATUS.QUEUED, email_id)
 
 	def _register_send_email(self, to_addr, cc_addr, bcc_addr, topic, text):
 		try:
