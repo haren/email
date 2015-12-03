@@ -31,8 +31,7 @@ class MainEmailHandler(object):
 		"""Uses simple round robin to pick a handler."""
 
 		# try all handlers until once sends / queues message
-		# TODO length of Enum
-		for i in range(0, 3):
+		for i in range(0, len(config.EMAIL_HANDLERS.__members__)): # no nice way to get enum members length
 			# obtain current handler, round-robin'ed
 			handler_id      = self.db.get_email_handler_and_rotate()
 			current_handler = self.handlers.get(handler_id, None)
