@@ -154,61 +154,20 @@ class EmailsHandler(BaseHandler):
             topic     = self.get_argument('topic', None)
             text      = self.get_argument('text', None)
 
-            # TODO MOVE THIS TO A SEPARATE VALIDATION FUNCTION
-            # RETURN (VALID, MESSAGE)
+            valid, message = validator.is_email_request_valid(
+                to_addr, cc_addr, bcc_addr, topic, text)
 
-            # perform necessary validations
-            main_logger.info(to_addr)
-            if not validator.is_valid_email_address(to_addr):
-                main_logger.debug(
-                    'Incorrect to_addr %s submitted by user %s'
-                    % (to_addr, user_id))
+            if not valid:
                 response.add_code(config.RESPONSE_ERROR)
-                response.add_msg('Invalid main recipient.')
+                response.add_msg(message)
                 return
                 yield
 
-            if cc_addr and len(cc_addr) and not validator.are_valid_email_addresses(cc_addr):
-                main_logger.debug(
-                    'Incorrect cc_addr list %s submitted by user %s'
-                    % (cc_addr, user_id))
-                response.add_code(config.RESPONSE_ERROR)
-                response.add_msg('At least one of cc recipients invalid.')
-                return
-                yield
-            # # valid, convertion safe
+            # valid, convertion safe
             if cc_addr and len(cc_addr):
                 cc_addr = str(cc_addr).split(',')
-
-            if bcc_addr and len(bcc_addr) and not validator.are_valid_email_addresses(bcc_addr):
-                main_logger.debug(
-                    'Incorrect bcc_addr list %s submitted by user %s'
-                    % (bcc_addr, user_id))
-                response.add_code(config.RESPONSE_ERROR)
-                response.add_msg('At least one of bcc recipients invalid.')
-                return
-                yield
-            # # valid, convertion safe
             if bcc_addr and len(bcc_addr):
                 bcc_addr = str(bcc_addr).split(',')
-
-            if not topic or not len(topic):
-                main_logger.debug(
-                    'Empty topic submitted by user %s'
-                    % (user_id))
-                response.add_code(config.RESPONSE_ERROR)
-                response.add_msg('Topic cannot be empty.')
-                return
-                yield
-
-            if not text or not len(text):
-                main_logger.debug(
-                    'Empty text submitted by user %s'
-                    % (user_id))
-                response.add_code(config.RESPONSE_ERROR)
-                response.add_msg('Text cannot be empty.')
-                return
-                yield
 
             status = yield tornado.gen.Task(
                 main_email_handler.send_email,
@@ -217,6 +176,8 @@ class EmailsHandler(BaseHandler):
             )
 
             main_logger.info("%s" % (status))
+            response.add_code(config.RESPONSE_OK)
+            #TODO response.add_field('send_status', status)
 
         except Exception, e:
             main_logger.exception(e)
