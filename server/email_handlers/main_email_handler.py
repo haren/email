@@ -29,31 +29,37 @@ class MainEmailHandler(object):
 	@tornado.gen.engine
 	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, sender_id, callback):
 		"""Uses simple round robin to pick a handler."""
-		self.log.debug("Starting")
 
 		# try all handlers until once sends / queues message
+		# TODO length of Enum
 		for i in range(0, 3):
 			# obtain current handler, round-robin'ed
-			# current_handler = self.handlers.get(
-			# 	self.db.get_email_handler_and_rotate(), None)
-			current_handler = self.handlers.get(
-				config.EMAIL_HANDLERS.MANDRILL.value, None)
+			handler_id      = self.db.get_email_handler_and_rotate()
+			current_handler = self.handlers.get(handler_id, None)
 			if not current_handler:
 				self.log.warning("Couldn't obtain handler.")
 				callback(config.SEND_STATUS.FAILED)
 				return # failed to find a working handler
 
 			# attempt to send email using the current handler
-			result = yield tornado.gen.Task(
+			cb_result = yield tornado.gen.Task(
 				current_handler.send_email,
 				to_addr, cc_addr, bcc_addr, topic, text
 			)
+			# cb_result[0] - args, cb_result[1] - kwargs
+			# http://www.tornadoweb.org/en/stable/gen.html#tornado.gen.Arguments
+			result, external_id = cb_result[0][0], cb_result[0][1]
+
+			self.log.info(
+				"Email %s sending result through handler %s: %s, external_id: %s."
+				% (topic, current_handler, result, external_id)
+				)
 
 			if result != config.SEND_STATUS.FAILED:
 				# save sent email
-				# self.db.save_email(
-				# 	to_addr, cc_addr, bcc_addr, topic,
-				# 	text, sender_id, current_handler.value, result)
+				self.db.save_email(
+					to_addr, cc_addr, bcc_addr, topic, text,
+					sender_id, handler_id, external_id, result)
 
 				# only continue with the iterations if failed to send.
 				# reaching this close suggests sent / queued, function can exit
@@ -66,10 +72,10 @@ class MainEmailHandler(object):
 				% (topic, to_addr	)
 			)
 
-			# self.db.save_email(
-			# 	to_addr, cc_addr, bcc_addr, topic,
-			# 	text, sender_id, current_handler.value,
-			# 	config.SEND_STATUS.FAILED)
+			self.db.save_email(
+				to_addr, cc_addr, bcc_addr, topic,
+				text, sender_id, current_handler.value,
+				None, config.SEND_STATUS.FAILED)
 
 			callback(config.SEND_STATUS.FAILED)
 			return

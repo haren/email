@@ -3,8 +3,10 @@
 import redis
 import config
 import logger
+from helpers import epoch_millis
 
 class RedisDb(object):
+	"""Local redis db. Using async drivers would be an overkill."""
 
 	#############################################################################
 	# CONNECTION INITIALIZATION
@@ -40,8 +42,34 @@ class RedisDb(object):
 	def get_user_sent_emails(self, user_id):
 		return []
 
-	def save_user_sent_email(self, email):
-		return True
+	def save_email(self, to_addr, cc_addr, bcc_addr, topic,
+					text, sender_id, handler_id, external_id, result):
+		"""
+		Uses hash email:<HANDLER_ID>:<EXTERNAL_ID>.
+		Also adds <HANDLER_ID>:<EXTERNAL_ID> to the user's emails
+		set of emails identified by key emails:<SENDER_ID>.
+		"""
+		now = epoch_millis()
+		email_data = {
+			'to_addr': to_addr,
+			'cc_addr': ','.join(cc_addr),
+			'bcc_addr': ','.join(bcc_addr),
+			'topic': topic,
+			'text': text,
+			'sender_id': sender_id,
+			'to_addr': to_addr
+
+		}
+		if result == config.SEND_STATUS.SENT:
+			email_data['sent_at'] = now
+		elif result == config.SEND_STATUS.QUEUED:
+			email_data['queued_at'] = now
+		else:
+			email_data['failed_at'] = now
+
+		self.db_r.hmset("email:%s:%s" % (handler_id, external_id), email_data)
+		self.db_r.sadd('emails:%s' % sender_id, '%s:%s' % (handler_id, external_id))
+		return
 
 
 	#############################################################################

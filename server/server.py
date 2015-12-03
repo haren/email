@@ -208,18 +208,13 @@ class EmailHandler(BaseHandler):
                 return
                 yield
 
-            cb_result = yield tornado.gen.Task(
+            status = yield tornado.gen.Task(
                 main_email_handler.send_email,
                 to_addr, cc_addr, bcc_addr,
                 topic, text, user_id
             )
-            # cb_result[0] - args, cb_result[1] - kwargs
-            # http://www.tornadoweb.org/en/stable/gen.html#tornado.gen.Arguments
-            success, external_id = cb_result[0][0], cb_result[0][1]
 
-            main_logger.info("%s %s" % (success, external_id))
-
-            # save result to the database in separate method
+            main_logger.info("%s" % (status))
 
         except Exception, e:
             main_logger.exception(e)
