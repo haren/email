@@ -23,7 +23,7 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             # TODO make sure this works as expected
-            (r"/email/*",   EmailHandler),
+            (r"/emails/*",   EmailsHandler),
             (r"/*",         MainHandler),
             (r".*",         DefaultHandler)
         ]
@@ -114,7 +114,7 @@ class MainHandler(BaseHandler):
         return self.render('index.html')
 
 
-class EmailHandler(BaseHandler):
+class EmailsHandler(BaseHandler):
 
     # @tornado.web.removeslash
     def get(self):
