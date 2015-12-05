@@ -197,9 +197,15 @@ class DeliveryMailgunHandler(BaseHandler):
 
     def post(self):
         try:
-            response = AjaxResponse()
-            main_logger.debug(self.request)
-            main_logger.debug(self.request.body)
+            response    = AjaxResponse()
+            external_id = self.get_argument("Message-Id", None)
+
+            main_db.set_email_sent(
+                config.EMAIL_HANDLERS.MAILGUN.value, external_id)
+
+            main_logger.debug(
+                "Mailgun email %s sent confirmation received." % external_id)
+
         except Exception, e:
             main_logger.exception(e)
             response.add_code(config.RESPONSE_ERROR)

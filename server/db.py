@@ -64,6 +64,8 @@ class RedisDb(object):
 		set of emails identified by key emails:<SENDER_ID>.
 		"""
 		now = epoch_millis()
+		cc_addr  = cc_addr or []
+		bcc_addr = bcc_addr or []
 		email_data = {
 			'to_addr': to_addr,
 			'cc_addr': ','.join(cc_addr),
@@ -84,6 +86,12 @@ class RedisDb(object):
 		self.db_r.hmset("email:%s:%s" % (handler_id, external_id), email_data)
 		self.db_r.sadd('emails:%s' % sender_id, '%s:%s' % (handler_id, external_id))
 		return
+
+	def set_email_sent(self, handler_id, external_id):
+		now = epoch_millis()
+		return self.db_r.hset(
+			"email:%s:%s" % (handler_id, external_id), sent_at
+		)
 
 
 	#############################################################################
