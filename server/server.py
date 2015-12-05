@@ -20,15 +20,22 @@ import validation
 ##############################################################################
 
 class Application(tornado.web.Application):
+    """
+    Main application class.
+    """
 
     def __init__(self):
+        """Initalizes the tornado server.
+
+        Defines the routing and server settings.
+        """
         handlers = [
             # end user email functionality
             (r"/emails/*",  EmailsHandler),
 
             # Email handlers confirmation webhooks
-            (r"/delivered/mailgun/*",  DeliveryMailgunHandler),
-            (r"/delivered/ses/*",  DeliverySesHandler),
+            (r"/delivered/mailgun/*",   DeliveryMailgunHandler),
+            (r"/delivered/ses/*",       DeliverySesHandler),
 
             # Main handlers - serving static content & handling url errors.
             (r"/*",         MainHandler),
@@ -49,10 +56,7 @@ class Application(tornado.web.Application):
 ##############################################################################
 
 class AjaxResponse(object):
-    """ Base class for forming responses
-    status(code) 			to set status
-    add_msg(str) 			to add a text message to response
-    add_field(name, value) 	to add a name/value pair to json response
+    """Base class for forming responses.
     """
 
     def __init__(self, status=0):
@@ -76,6 +80,13 @@ class AjaxResponse(object):
 ##############################################################################
 
 class BaseHandler(tornado.web.RequestHandler):
+    """
+    Base Handler class.
+
+    Sets supported http methods and response types.
+
+    Aggregates methods shared by all handlers.
+    """
 
     def check_xsrf_cookie(self):
         # TODO REMOVE AFTER TESTING
@@ -108,6 +119,11 @@ class BaseHandler(tornado.web.RequestHandler):
 
 
 class MainHandler(BaseHandler):
+    """
+    Main Handler class.
+
+    Serves the index page.
+    """
 
     def write(self, *args, **kwargs):
         # Do not set json type for this handler.
@@ -122,9 +138,27 @@ class MainHandler(BaseHandler):
 
 
 class EmailsHandler(BaseHandler):
+    """
+    Email Handler class.
+
+    Servers the email sending and email data retrieval functionalities
+    through its post and get methods respectively.
+    """
 
     # @tornado.web.removeslash
     def get(self):
+        """Retrieves a list of all emails sent by a given user.
+
+        If call succeedes, returns QUEUED status. A webhook has been setup for
+        delivery confirmations (server.DeliveryMailgunHandler).
+
+        Returns:
+            {
+                'status': Response status.
+                'emails': A list of email objects. Included only if status == 200.
+                'msg': Error message. Included only if status != 200.
+            }
+        """
         try:
             response = AjaxResponse()
             user_id  = self.get_current_user()
@@ -150,6 +184,25 @@ class EmailsHandler(BaseHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def post(self):
+        """Sends an email if the request is valid. Performs the validation.
+
+        If call succeedes, returns QUEUED status. A webhook has been setup for
+        delivery confirmations (server.DeliveryMailgunHandler).
+
+        Args:
+            to_addr: A string containing a valid email address of the main recipient.
+            cc_addr: A string containing a comma-separated list of cc addresses.
+            bcc_addr: A string containing a comma-separated list of bcc addresses.
+            subject: A string containing email subject. Cannot be empty.
+            text: A string containing email body. Cannot be empty.
+
+        Returns:
+            {
+                'status': Response status.
+                'send_status': 'SENT' / 'QUEUED' / 'FAILED'. Included only if status == 200.
+                'msg': Error message. Included only if status != 200.
+            }
+        """
         global main_email_handler
         global validator
         try:
@@ -198,8 +251,13 @@ class EmailsHandler(BaseHandler):
 
 
 class DeliveryMailgunHandler(BaseHandler):
+    """
+    Handler prepared for the Mailgun delivery confirmation webhook.
+    """
 
     def post(self):
+        """Marks the email sent by a mailgun handler as sent in the database.
+        """
         try:
             response    = AjaxResponse()
             external_id = self.get_argument("Message-Id", None)
@@ -224,8 +282,13 @@ class DeliveryMailgunHandler(BaseHandler):
 
 
 class DeliverySesHandler(BaseHandler):
+    """
+    Handler prepared for the Ses delivery confirmation webhook.
+    """
 
     def post(self):
+        """Marks the email sent by a SES handler as sent in the database.
+        """
         try:
             response    = AjaxResponse()
 
@@ -248,7 +311,11 @@ class DeliverySesHandler(BaseHandler):
 
 
 class DefaultHandler(BaseHandler):
-    """Default handler. Handles all requests attempting to reach non-existing API endpoints."""
+    """
+    Default handler.
+
+    Handles all requests attempting to reach non-existing API endpoints.
+    """
 
     def get(self):
         try:

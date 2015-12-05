@@ -3,7 +3,13 @@ from logging.handlers import TimedRotatingFileHandler
 import os
 
 def init_logger(name):
-    """Initialize the logging system for a given module/process."""
+    """Initialize the logging system for a given module/process.
+
+        Args:
+            name: name of the logger to be initialized.
+        Returns:
+            logger: the logger object.
+    """
     log_file_name = name + '.log'
     formatter     = logging.Formatter('%(asctime)s %(levelname)-8s - %(module)s - %(message)s')
 

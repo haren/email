@@ -13,8 +13,20 @@ from ses_handler 		import SesEmailHandler
 from mailgun_handler 	import MailgunEmailHandler
 
 class MainEmailHandler(object):
+	"""
+	Class exposing email sending functionality. Concrete handlers are hidden from the clients.
+	Failover supported.
+    """
 
 	def __init__(self, db, main_logger = None):
+		"""Initalizes the database and the logger for the object.
+
+		Creates objects for all available email handlers.
+
+	    Args:
+	    	main_logger: logger to which the logs should be sent, optional
+	    	db: database connection object.
+	    """
 		self.log = main_logger or logger.init_logger("email")
 		self.db  = db
 
@@ -27,7 +39,24 @@ class MainEmailHandler(object):
 
 	@tornado.gen.engine
 	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, sender_id, callback):
-		"""Uses simple round robin to pick a handler."""
+		"""Sends an email using one of the registered email services.
+
+		Supports failover (tries all available services before failing).
+
+		Uses a simple round robin selection for email handlers.
+
+		Saves the email data and send result in redis.
+
+	    Args:
+	    	to_addr: Email address of the main recipient.
+	        cc_addr: A list of email addresses of all cc'd recipients.
+	        bcc_addr: A list of email addresses of all bcc'd recipients.
+	        topic: Email subject.
+	        text: Email body.
+	        sender_id: User id of the user requesting the email to be sent.
+	    Returns:
+	    	SendStatus: FAILED/QUEUED/SENT
+	    """
 
 		# try all handlers until once sends / queues message
 		for i in range(0, len(config.EMAIL_HANDLERS.__members__)): # no nice way to get enum members length

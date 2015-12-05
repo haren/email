@@ -27,11 +27,13 @@ class SendgridEmailHandler(object):
 		}
 		body = tornado.escape.json_encode(mail_data)
 
+		request = HTTPRequest(
+			url=config.SENDGRID_URL + "/mail.send.json",
+			connect_timeout=config.TIMEOUT, request_timeout=config.TIMEOUT,
+			body=body, method='POST')
+
 		response = yield tornado.gen.Task(
-			self.http_client.fetch, config.SENDGRID_URL + "/mail.send.json",
-			method='POST', body=body
-		)
-		self.log.info(response)
-		self.log.info(response.body)
+			self.http_client.fetch, request)
 
 		callback(response)
+		return

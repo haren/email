@@ -9,8 +9,20 @@ import config
 import logger
 
 class MailgunEmailHandler(object):
+	"""
+	Handler class for Mailgun external email service provider.
+
+	Source: https://www.mailgun.com/
+    """
 
 	def __init__(self, main_logger = None):
+		"""Initalizes the logger for the object.
+		Creates an async http client to communicate with the service.
+		Initalizes the api key from the config.
+
+	    Args:
+	    	main_logger: logger to which the logs should be sent, optional
+	    """
 		self.log = main_logger or logger.init_logger("mailgun")
 
 		self.http_client = AsyncHTTPClient()
@@ -18,8 +30,22 @@ class MailgunEmailHandler(object):
 
 	@tornado.gen.engine
 	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, callback):
-		"""This is handled slightly differently than other mailing libraries
-		because of how mailgun responds internally."""
+		"""Sends an email using mailgun service.
+
+		If call succeedes, returns QUEUED status. A webhook has been setup for
+		delivery confirmations (server.DeliveryMailgunHandler).
+
+	    Args:
+	    	to_addr: Email address of the main recipient.
+	        cc_addr: A list of email addresses of all cc'd recipients.
+	        bcc_addr: A list of email addresses of all bcc'd recipients.
+	        topic: Email subject.
+	        text: Email body.
+	    Returns:
+	    	(SendStatus, ExternalId)
+	    	SendStatus: FAILED/QUEUED
+	    	ExternalId: External id that the service assigned to the email. None if FAIELD.
+	    """
 
 		email_id = self._register_send_email(
 			to_addr, cc_addr, bcc_addr, topic, text)
@@ -69,13 +95,3 @@ class MailgunEmailHandler(object):
 		    'subject': topic,
 		    'text': text
 		}
-
-	# def _get_email_send_status(self, email_id):
-	# 	# http://nullege.com/codes/search/tornado.gen.with_timeout
-		# request_url = config.MAILGUN_URL + '/events'
-		# response = requests.get(request_url, auth=('api', config.MAILGUN_KEY), params={'limit': 5})
-
-		# sent_success = self._get_email_send_status(email_id)
-
-		# self.log.info(response.text)
-		# self.log.info(response.status_code)

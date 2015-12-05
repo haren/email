@@ -1,6 +1,6 @@
 #!/bin/env python
 
-from tornado.httpclient import AsyncHTTPClient
+from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 import tornado.web
 import tornado.gen
 import json
@@ -9,8 +9,20 @@ import config
 import logger
 
 class MandrillEmailHandler(object):
+	"""
+	Handler class for Mandrill external email service provider.
+
+	Source: https://www.mandrill.com/
+    """
 
 	def __init__(self, main_logger = None):
+		"""Initalizes the logger for the object.
+		Creates an async http client to communicate with the service.
+		Initalizes the api key from the config.
+
+	    Args:
+	    	main_logger: logger to which the logs should be sent, optional
+	    """
 		self.log = main_logger or logger.init_logger("mandrill")
 
 		self.http_client = AsyncHTTPClient()
@@ -18,8 +30,23 @@ class MandrillEmailHandler(object):
 
 	@tornado.gen.engine
 	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, callback):
-		"""No need for a web hook handling here.
-		async=false so when the call returns we will know if it is sent / rejected"""
+		"""Sends an email using Mandrill service.
+
+		No need for a web hook handling here.
+		Async parameter of mandrill api call defaults to false,
+		so when the call returns it always does with a sent / rejected status.
+
+	    Args:
+	    	to_addr: Email address of the main recipient.
+	        cc_addr: A list of email addresses of all cc'd recipients.
+	        bcc_addr: A list of email addresses of all bcc'd recipients.
+	        topic: Email subject.
+	        text: Email body.
+	    Returns:
+	    	(SendStatus, ExternalId)
+	    	SendStatus: SENT/FAILED
+	    	ExternalId: External id that the service assigned to the email. None if FAIELD.
+	    """
 
 		mail_data = {
 			"key": self.key,
@@ -27,12 +54,13 @@ class MandrillEmailHandler(object):
 		}
 		body = tornado.escape.json_encode(mail_data)
 
+		request = HTTPRequest(
+			url=config.MANDRILL_URL + "/messages/send.json",
+			connect_timeout=config.TIMEOUT, request_timeout=config.TIMEOUT,
+			body=body, method='POST', validate_cert = False)
+
 		response = yield tornado.gen.Task(
-			self.http_client.fetch,
-			config.MANDRILL_URL + "/messages/send.json",
-			method='POST', body=body,
-			validate_cert = False # mandrill has some cert issues.
-		)
+			self.http_client.fetch, request)
 
 		if int(response.code) == config.RESPONSE_OK:
 			body = json.loads(response.body)

@@ -13,8 +13,20 @@ import config
 import logger
 
 class SesEmailHandler(object):
+	"""
+	Handler class for Amazon SES external email service provider.
+
+	Source: https://aws.amazon.com/ses/
+    """
 
 	def __init__(self, main_logger = None):
+		"""Initalizes the logger for the object.
+		Creates an async boto client to communicate with the aws service.
+		API keys are derived from the environment (e.g. ~/.aws/credentials).
+
+	    Args:
+	    	main_logger: logger to which the logs should be sent, optional
+	    """
 		self.log = main_logger or logger.init_logger("ses")
 
 		self.ses_client = Botocore(
@@ -23,6 +35,23 @@ class SesEmailHandler(object):
 
 	@tornado.gen.engine
 	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, callback):
+		"""Sends an email using mailgun service.
+
+		If call succeedes, returns QUEUED status. An SNS topic has been created
+		and webhook with a subscription to the topic has been setup for
+		delivery confirmations (server.DeliverySesHandler).
+
+	    Args:
+	    	to_addr: Email address of the main recipient.
+	        cc_addr: A list of email addresses of all cc'd recipients.
+	        bcc_addr: A list of email addresses of all bcc'd recipients.
+	        topic: Email subject.
+	        text: Email body.
+	    Returns:
+	    	(SendStatus, ExternalId)
+	    	SendStatus: FAILED/QUEUED
+	    	ExternalId: External id that the service assigned to the email. None if FAIELD.
+	    """
 		message     = self._prepare_message(topic, text)
 		destination = self._prepare_destination(to_addr, cc_addr, bcc_addr)
 
