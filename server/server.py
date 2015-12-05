@@ -7,6 +7,7 @@ import tornado.escape
 import tornado.web
 import tornado.gen
 import uuid
+import json
 
 import config
 import logger
@@ -225,19 +226,15 @@ class DeliverySesHandler(BaseHandler):
     def post(self):
         try:
             response    = AjaxResponse()
-            main_logger.debug(self.request)
-            main_logger.debug(self.request.body)
-            # external_id = self.get_argument("Message-Id", None)
 
-            if external_id:
-                external_id = external_id.replace('<', '').replace('>', '')
-
+	    message = json.loads(self.request.body)["Message"]
+            external_id = json.loads(message)["mail"]["messageId"]
 
             main_db.set_email_sent(
-                config.EMAIL_HANDLERS.MAILGUN.value, external_id)
+                config.EMAIL_HANDLERS.SES.value, external_id)
 
             main_logger.debug(
-                "SES email %s sent confirmation received." % external_id)
+               "SES email %s sent confirmation received." % external_id)
 
         except Exception, e:
             main_logger.exception(e)
