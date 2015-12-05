@@ -14,6 +14,7 @@ class MandrillEmailHandler(object):
 		self.log = main_logger or logger.init_logger("mandrill")
 
 		self.http_client = AsyncHTTPClient()
+		self.key         = config.MANDRILL_KEY
 
 	@tornado.gen.engine
 	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, callback):
@@ -21,7 +22,7 @@ class MandrillEmailHandler(object):
 		async=false so when the call returns we will know if it is sent / rejected"""
 
 		mail_data = {
-			"key": config.MANDRILL_KEY,
+			"key": self.key,
 			"message": self._prepare_message(to_addr, cc_addr, bcc_addr, topic, text)
 		}
 		body = tornado.escape.json_encode(mail_data)

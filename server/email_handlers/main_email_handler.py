@@ -21,8 +21,7 @@ class MainEmailHandler(object):
 		self.handlers = {
 			config.EMAIL_HANDLERS.MANDRILL.value: 	MandrillEmailHandler(self.log),
 			config.EMAIL_HANDLERS.MAILGUN.value: 	MailgunEmailHandler(self.log),
-			config.EMAIL_HANDLERS.SES.value: 		SesEmailHandler(self.log),
-			# config.EMAIL_HANDLERS.SENDGRID.value: SendgridEmailHandler(self.log)
+			config.EMAIL_HANDLERS.SES.value: 		SesEmailHandler(self.log)
 		}
 		self.db.init_email_handlers(config.EMAIL_HANDLERS)
 

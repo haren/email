@@ -14,6 +14,7 @@ class MailgunEmailHandler(object):
 		self.log = main_logger or logger.init_logger("mailgun")
 
 		self.http_client = AsyncHTTPClient()
+		self.key         = config.MAILGUN_KEY
 
 	@tornado.gen.engine
 	def send_email(self, to_addr, cc_addr, bcc_addr, topic, text, callback):
@@ -36,7 +37,7 @@ class MailgunEmailHandler(object):
 
 			response = requests.post(
 				request_url,
-				auth = ('api', config.MAILGUN_KEY),
+				auth = ('api', self.key),
 				data = message,
 				timeout = config.BLOCKING_TIMEOUT
 			)

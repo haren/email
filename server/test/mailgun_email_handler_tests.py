@@ -26,8 +26,35 @@ class SendMailgunEmailCorrectTestCase(testing.AsyncTestCase):
 	def test_send_correct_email(self):
 		cb_result = yield tornado.gen.Task(
 			self.mailgun_handler.send_email,
-			'lukasz.harezlak@gmail.com', None, None, 'test3', 'text3'
+			config.FROM_ADDRESS, None, None, 'test3', 'text3'
 		)
 		result, external_id = cb_result[0][0], cb_result[0][1]
 		self.assertEqual(result, self.expected_result)
 		self.assertIsNotNone(external_id)
+
+
+class SendMailgunEmailIncorrectTestCase(testing.AsyncTestCase):
+
+	def __init__(self, *args, **kwargs):
+		super(SendMailgunEmailIncorrectTestCase, self).__init__(*args, **kwargs)
+
+		self.mailgun_handler = MailgunEmailHandler()
+		self.expected_result = config.SEND_STATUS.FAILED
+
+	def setUp(self):
+		super(SendMailgunEmailIncorrectTestCase, self).setUp()
+		# force mailgun client use the same io_loop as the test case,
+		# otherwise nothing will be yielded in the test method
+		self.mailgun_handler.http_client = AsyncHTTPClient(io_loop = self.io_loop)
+		# replace the key to make sure the call fails
+		self.mailgun_handler.key         = "WRONG_KEY"
+
+	@testing.gen_test
+	def test_send_correct_email(self):
+		cb_result = yield tornado.gen.Task(
+			self.mailgun_handler.send_email,
+			config.FROM_ADDRESS, None, None, 'test3', 'text3'
+		)
+		result, external_id = cb_result[0][0], cb_result[0][1]
+		self.assertEqual(result, self.expected_result)
+		self.assertIsNone(external_id)
