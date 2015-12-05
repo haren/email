@@ -158,7 +158,7 @@ class EmailsHandler(BaseHandler):
             to_addr   = self.get_argument('to', None)
             cc_addr   = self.get_argument('cc', None)
             bcc_addr  = self.get_argument('bcc', None)
-            topic     = self.get_argument('topic', None)
+            topic     = self.get_argument('subject', None)
             text      = self.get_argument('text', None)
 
             valid, message = validator.is_email_request_valid(
@@ -182,9 +182,11 @@ class EmailsHandler(BaseHandler):
                 topic, text, user_id
             )
 
-            main_logger.info("%s" % (status))
+            main_logger.debug(
+                "Email %s to %s by user %s sent with status %s."
+                % (topic, to_addr, user_id, status))
             response.add_code(config.RESPONSE_OK)
-            #TODO response.add_field('send_status', status)
+            response.add_field('send_status', status.name)
 
         except Exception, e:
             main_logger.exception(e)
