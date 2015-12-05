@@ -73,7 +73,7 @@ class MainEmailHandler(object):
 
 			self.db.save_email(
 				to_addr, cc_addr, bcc_addr, topic,
-				text, sender_id, current_handler.value,
+				text, sender_id, handler_id,
 				None, config.SEND_STATUS.FAILED)
 
 			callback(config.SEND_STATUS.FAILED)

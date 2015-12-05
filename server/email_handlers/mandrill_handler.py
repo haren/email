@@ -27,8 +27,10 @@ class MandrillEmailHandler(object):
 		body = tornado.escape.json_encode(mail_data)
 
 		response = yield tornado.gen.Task(
-			self.http_client.fetch, config.MANDRILL_URL + "/messages/send.json",
-			method='POST', body=body
+			self.http_client.fetch,
+			config.MANDRILL_URL + "/messages/send.json",
+			method='POST', body=body,
+			validate_cert = False # mandrill has some cert issues.
 		)
 
 		if int(response.code) == config.RESPONSE_OK:
