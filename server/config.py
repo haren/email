@@ -17,6 +17,13 @@ RESPONSE_OK            = 200
 # Api listening port, run directly without any HAProxy / Load balancer
 PORT = 80
 
+# when running in docker container this needs to be changed to the
+# docker VM IP, e.g. on Mac can be looked up (depeneding on the used tool) using:
+# docker-machine ip dev
+# or
+# boot2docker ip
+HOST = "127.0.0.1" # localhost - "127.0.0.1", boot2docker on mac: "192.168.59.103"
+
 ##############################################################################
 # REDIS
 ##############################################################################
@@ -31,7 +38,7 @@ REDIS_DB   = 0
 FROM_ADDRESS 	= "lukasz.harezlak@gmail.com"
 FROM_NAME 		= "Lukasz Harezlak"
 
-MANDRILL_URL = "https://mandrillapp.com/api/1.0/"
+MANDRILL_URL = "FILL_IN_USERNAME"
 MANDRILL_KEY = "FILL_IN_THE_KEY"
 
 SENDGRID_URL      = "https://api.sendgrid.com/api"
@@ -42,7 +49,6 @@ MAILGUN_USERNAME 	= "FILL_IN_USERNAME"
 MAILGUN_URL 		= "https://api.mailgun.net/v3/%s.mailgun.org" % MAILGUN_USERNAME
 MAILGUN_KEY 		= "FILL_IN_THE_KEY"
 
-# EMAIL_HANDLERS = Enum('EMAIL_HANDLERS', 'MANDRILL MAILGUN SES SENDGRID')
 EMAIL_HANDLERS = Enum('EMAIL_HANDLERS', 'MANDRILL MAILGUN SES')
 
 ##############################################################################
@@ -60,10 +66,3 @@ BLOCKING_TIMEOUT = 1
 # EMAIL SEND STATUS
 ##############################################################################
 SEND_STATUS = Enum('SEND_STATUS', 'SENT QUEUED FAILED')
-
-# when running in docker container this needs to be changed to the
-# docker VM IP, e.g. on Mac can be looked up (depeneding on the used tool) using:
-# docker-machine ip dev
-# or
-# boot2docker ip
-HOST = "192.168.59.103" # localhost - "127.0.0.1", boot2docker on mac: "192.168.59.103"

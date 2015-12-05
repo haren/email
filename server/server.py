@@ -227,14 +227,14 @@ class DeliverySesHandler(BaseHandler):
         try:
             response    = AjaxResponse()
 
-	    message = json.loads(self.request.body)["Message"]
+            message     = json.loads(self.request.body)["Message"]
             external_id = json.loads(message)["mail"]["messageId"]
 
             main_db.set_email_sent(
                 config.EMAIL_HANDLERS.SES.value, external_id)
 
             main_logger.debug(
-               "SES email %s sent confirmation received." % external_id)
+                "SES email %s sent confirmation received." % external_id)
 
         except Exception, e:
             main_logger.exception(e)
