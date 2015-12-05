@@ -90,8 +90,7 @@ class RedisDb(object):
 	def set_email_sent(self, handler_id, external_id):
 		now = epoch_millis()
 		return self.db_r.hset(
-			"email:%s:%s" % (handler_id, external_id), sent_at
-		)
+			"email:%s:%s" % (handler_id, external_id), 'sent_at', now)
 
 
 	#############################################################################
