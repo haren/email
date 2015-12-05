@@ -200,6 +200,10 @@ class DeliveryMailgunHandler(BaseHandler):
             response    = AjaxResponse()
             external_id = self.get_argument("Message-Id", None)
 
+            if external_id:
+                external_id = external_id.replace('<', '').replace('>', '')
+
+
             main_db.set_email_sent(
                 config.EMAIL_HANDLERS.MAILGUN.value, external_id)
 
