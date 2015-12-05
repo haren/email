@@ -23,3 +23,16 @@ docker run --net="host" -d redis
 # IMPORTANT: replace REPO_PATH with the absolute path to your main repo directory
 docker run --net="host" -v REPO_PATH/server/logs:/app/server/logs -d server
 ```
+
+## Shutting down the server
+To shut down the server, simply stop the docker container in which the server process (`python server.py`) is running:
+
+```
+# search for the container id
+docker ps
+
+# stop the container
+docker stop SERVER_CONTAIENR_ID
+```
+
+
