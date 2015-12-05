@@ -18,7 +18,7 @@ class SendMailgunEmailCorrectTestCase(testing.AsyncTestCase):
 
 	def setUp(self):
 		super(SendMailgunEmailCorrectTestCase, self).setUp()
-		# force mandrill client use the same io_loop as the test case,
+		# force mailgun client use the same io_loop as the test case,
 		# otherwise nothing will be yielded in the test method
 		self.mailgun_handler.http_client = AsyncHTTPClient(io_loop = self.io_loop)
 
