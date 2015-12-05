@@ -5,6 +5,8 @@ This directory contains the backend part of the project.
 ## Installation and Requirements
 The project can be installed on any UNIX system. The only external requirement is `docker`. Installation instructions can be found [here](http://docs.docker.com/engine/installation/). 
 
+Mac OS requires also a docker porting solution, such as [`docker machine`](https://docs.docker.com/machine/) (recommended) or [`boot2docker`](http://boot2docker.io/)
+
 **The solution has been deployed and tested on `OS X El Captain 10.11.1` and `Amazon Ubuntu Server 14.04`.**
 
 ## Running the server
