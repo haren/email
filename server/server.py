@@ -22,8 +22,13 @@ class Application(tornado.web.Application):
 
     def __init__(self):
         handlers = [
-            # TODO make sure this works as expected
-            (r"/emails/*",   EmailsHandler),
+            # end user email functionality
+            (r"/emails/*",  EmailsHandler),
+
+            # Email handlers confirmation webhooks
+            (r"/delivered/mailgun/*",  DeliveryMailgunHandler),
+
+            # Main handlers - serving static content & handling url errors.
             (r"/*",         MainHandler),
             (r".*",         DefaultHandler)
         ]
@@ -179,6 +184,22 @@ class EmailsHandler(BaseHandler):
             response.add_code(config.RESPONSE_OK)
             #TODO response.add_field('send_status', status)
 
+        except Exception, e:
+            main_logger.exception(e)
+            response.add_code(config.RESPONSE_ERROR)
+        finally:
+            json_ = tornado.escape.json_encode(response.get())
+            self.write(json_)
+            self.finish()
+
+
+class DeliveryMailgunHandler(BaseHandler):
+
+    def post(self):
+        try:
+            response = AjaxResponse()
+            main_logger.debug(self.request)
+            main_logger.debug(self.request.body)
         except Exception, e:
             main_logger.exception(e)
             response.add_code(config.RESPONSE_ERROR)
