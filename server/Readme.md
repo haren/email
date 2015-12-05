@@ -63,3 +63,8 @@ All other requests will results in the following response
 {"status": 404, "msg": "Incorrect request url."}
 ```
 
+### Configuration
+
+All necessary configuration changes can be performed in the `config.py` file. The constans are self-explanatory.
+
+**IMPORTANT:** Application requires you to register your own accounts with each external email sending providers. The provided API keys should be then placed into `config.py` file. Keys for AWS SES service should be put in a [boto-accessible file](http://boto.cloudhackers.com/en/latest/boto_config_tut.html), e.g. `~/.aws/credentials`.
