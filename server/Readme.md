@@ -35,4 +35,15 @@ docker ps
 docker stop SERVER_CONTAIENR_ID
 ```
 
+## Usage
+
+### Response Format
+
+All the responses are returned in `JSON` format (except for serving the web page). Sample response is presented below. Response always returns HTML code `200` and the status indicates request handling effect.
+
+ - `status` is an integer number,
+ - `send_status` is a string indicating the requested email send status.
+```
+{"status": 200, "send_status": "SENT"}
+```
 
