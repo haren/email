@@ -27,6 +27,7 @@ class Application(tornado.web.Application):
 
             # Email handlers confirmation webhooks
             (r"/delivered/mailgun/*",  DeliveryMailgunHandler),
+            (r"/delivered/ses/*",  DeliverySesHandler),
 
             # Main handlers - serving static content & handling url errors.
             (r"/*",         MainHandler),
@@ -209,6 +210,34 @@ class DeliveryMailgunHandler(BaseHandler):
 
             main_logger.debug(
                 "Mailgun email %s sent confirmation received." % external_id)
+
+        except Exception, e:
+            main_logger.exception(e)
+            response.add_code(config.RESPONSE_ERROR)
+        finally:
+            json_ = tornado.escape.json_encode(response.get())
+            self.write(json_)
+            self.finish()
+
+
+class DeliverySesHandler(BaseHandler):
+
+    def post(self):
+        try:
+            response    = AjaxResponse()
+            main_logger.debug(self.request)
+            main_logger.debug(self.request.body)
+            # external_id = self.get_argument("Message-Id", None)
+
+            if external_id:
+                external_id = external_id.replace('<', '').replace('>', '')
+
+
+            main_db.set_email_sent(
+                config.EMAIL_HANDLERS.MAILGUN.value, external_id)
+
+            main_logger.debug(
+                "SES email %s sent confirmation received." % external_id)
 
         except Exception, e:
             main_logger.exception(e)
