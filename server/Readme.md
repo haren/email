@@ -76,3 +76,16 @@ The application logs all important events into a time-rotating log file. The log
 /server/logs/main.log/main.log
 ```
 And is created automatically upon server start.
+
+## Testing
+
+Test suite has been prepared for the app. To run the test suite, make sure the test is running and perform the following:
+
+```
+cd servers/test
+python run_tests.py
+```
+
+The test process exists with an appropriate exit code so that it can be directly plugged into an e.g. continuous integration solution.
+
+**IMPORTANT** : When executing tests, make sure that the IP address under which the test suite sees the server is correct. This can be configured in `config.py` (`HOST` constant).
