@@ -1,0 +1,7 @@
+tornado==4.2.1
+redis==2.9.1
+validate-email==1.3
+requests==2.3.0
+botocore==1.2.0
+tornado-botocore==1.0.2
+enum34==1.0.4
