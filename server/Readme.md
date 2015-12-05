@@ -47,3 +47,19 @@ All the responses are returned in `JSON` format (except for serving the web page
 {"status": 200, "send_status": "SENT"}
 ```
 
+### Routing
+
+| Path | Description |
+|----|----|
+| `/emails/` | GET lists all emails a given user (cookie-identified) has sent, POST sends an email. |
+| `/delivered/mailgun/` | POST servers as a handler for a delivery webhook confirmation for Mailgun service. |
+| `/delivered/ses/` | POST servers as a handler for a delivery webhook confirmation for AWS SES service. |
+| `/` | GET servers the web app. |
+
+
+All other requests will results in the following response
+
+```
+{"status": 404, "msg": "Incorrect request url."}
+```
+
