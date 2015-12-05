@@ -14,8 +14,8 @@ RESPONSE_ERROR         = 500
 RESPONSE_NOTFOUND      = 404
 RESPONSE_OK            = 200
 
-# Api listening port
-PORT = 8888
+# Api listening port, run directly without any HAProxy / Load balancer
+PORT = 80
 
 ##############################################################################
 # REDIS
@@ -38,7 +38,7 @@ SENDGRID_URL      = "https://api.sendgrid.com/api"
 SENDGRID_USERNAME = "FILL_IN_USERNAME"
 SENDGRID_KEY      = "FILL_IN_THE_KEY"
 
-MAILGUN_USERNAME 	= "FILL IN USERNAME"
+MAILGUN_USERNAME 	= "FILL_IN_USERNAME"
 MAILGUN_URL 		= "https://api.mailgun.net/v3/%s.mailgun.org" % MAILGUN_USERNAME
 MAILGUN_KEY 		= "FILL_IN_THE_KEY"
 
