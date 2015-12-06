@@ -59,6 +59,8 @@ All the responses are returned in `JSON` format (except for serving the web page
 | `/emails/` | GET lists all emails a given user (cookie-identified) has sent, POST sends an email. |
 | `/delivered/mailgun/` | POST servers as a handler for a delivery webhook confirmation for Mailgun service. |
 | `/delivered/ses/` | POST servers as a handler for a delivery webhook confirmation for AWS SES service. |
+| `/rejected/mailgun/` | POST servers as a handler for a rejection webhook for Mailgun service. |
+| `/rejected/ses/` | POST servers as a handler for a rejection webhook for AWS SES service. |
 | `/` | GET servers the web app. |
 
 
