@@ -114,14 +114,12 @@ class RedisDb(object):
 		cc_addr  = cc_addr or []
 		bcc_addr = bcc_addr or []
 		email_data = {
-			'to_addr': to_addr,
-			'cc_addr': ','.join(cc_addr),
-			'bcc_addr': ','.join(bcc_addr),
-			'topic': topic,
+			'to': to_addr,
+			'cc': ','.join(cc_addr),
+			'bcc': ','.join(bcc_addr),
+			'subject': topic,
 			'text': text,
-			'sender_id': sender_id,
-			'to_addr': to_addr
-
+			'sender_id': sender_id
 		}
 		if result == config.SEND_STATUS.SENT:
 			email_data['sent_at'] = now
