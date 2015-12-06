@@ -193,9 +193,9 @@ class EmailsHandler(BaseHandler):
         delivery confirmations (server.DeliveryMailgunHandler).
 
         Args:
-            to_addr: A string containing a valid email address of the main recipient.
-            cc_addr: A string containing a comma-separated list of cc addresses.
-            bcc_addr: A string containing a comma-separated list of bcc addresses.
+            to: A string containing a valid email address of the main recipient.
+            cc: A string containing a comma-separated list of cc addresses.
+            bcc: A string containing a comma-separated list of bcc addresses.
             subject: A string containing email subject. Cannot be empty.
             text: A string containing email body. Cannot be empty.
 
