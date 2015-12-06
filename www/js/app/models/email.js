@@ -64,22 +64,14 @@ define([
         }, {silent: true});
 
         var self = this;
-        if (this.get('status_updates') < 7) {
-          this.fetch({
-            success: function() {
-              self._backOff(
-                self.get('status_updates'))(
-                  self.updateDerivedAttributes.bind(self)
-              );
-            }
-          });
-        } else {
-          // set to REJECTED
-          this.set({
-              status: "REJECTED",
-              status_at: new Date().toString()
-          }, {silent:false}); //trigger the change for the views to update
-        }
+        this.fetch({
+          success: function() {
+            self._backOff(
+              self.get('status_updates'))(
+                self.updateDerivedAttributes.bind(self)
+            );
+          }
+        });
       },
 
       send: function (options) { // options object used to pass a callback by client object.
