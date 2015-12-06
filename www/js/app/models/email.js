@@ -28,7 +28,11 @@ define([
         this.save(null, { //pass null to save all attributes
           success: function(model, response, opts){
             if (options.callback) {
-              options.callback(true, response);
+              if (response.status == 200) {
+                options.callback(true, response);
+              } else {
+                options.callback(false, response);
+              }
             }
           },
           error: function(model, response, opts){

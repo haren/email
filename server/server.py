@@ -248,7 +248,11 @@ class EmailsHandler(BaseHandler):
             main_logger.debug(
                 "Email %s to %s by user %s sent with status %s."
                 % (topic, to_addr, user_id, status))
-            response.add_code(config.RESPONSE_OK)
+
+            if status == config.SEND_STATUS.FAILED:
+                response.add_code(config.RESPONSE_ERROR)
+            else:
+                response.add_code(config.RESPONSE_OK)
             response.add_field('send_status', status.name)
 
         except Exception, e:
@@ -282,6 +286,8 @@ class DeliveryMailgunHandler(BaseHandler):
             main_logger.debug(
                 "Mailgun email %s sent confirmation received." % external_id)
 
+            response.add_code(config.RESPONSE_OK)
+
         except Exception, e:
             main_logger.exception(e)
             response.add_code(config.RESPONSE_ERROR)
@@ -310,6 +316,8 @@ class DeliverySesHandler(BaseHandler):
 
             main_logger.debug(
                 "SES email %s sent confirmation received." % external_id)
+
+            response.add_code(config.RESPONSE_OK)
 
         except Exception, e:
             main_logger.exception(e)
