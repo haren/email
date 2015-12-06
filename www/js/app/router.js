@@ -3,7 +3,7 @@ define([
 	'underscore',
 	'backbone',
 	'views/index/index',
-	'views/emails/emails',
+	'views/emails/emailsMain',
 	],
 	function($, _, Backbone, indexView, emailsView) {
 		var AppRouter = Backbone.Router.extend({

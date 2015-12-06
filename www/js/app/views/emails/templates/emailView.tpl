@@ -1,0 +1,1 @@
+<p>Sample email view.</p>
