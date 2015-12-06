@@ -3,7 +3,8 @@ define([
 	'underscore',
 	'backbone',
 	'text!views/index/templates/indexView.tpl',
-	], function($, _, Backbone, indexTemplate) {
+	'models/email'
+	], function($, _, Backbone, indexTemplate, EmailModel) {
 		var indexView = Backbone.View.extend({
 			el: 'body',
 
@@ -19,23 +20,13 @@ define([
 		    sendEmail: function(e) {
 		    	e.preventDefault();
 
-		    	// TODO REPLACE WITH BACKBONE MODEL - VALIDATE + SAVE
-		    	var email = {
-		    		'to': $('#to-address').val(),
-		    		'subject': $('#subject').val(),
-		    		'text': $('#body').val()
-		    	}
-	    	    $.ajax({
-			        type: "POST",
-			        url: "/emails",
-			        async: true,
-			        cache: false,
-			        data: email, dataType: "json",
-			        success: function (result) { console.log(result) },
-			        error: function (jqXHR, exception) {
-			            console.log(exception);
-			        } }
-			    );
+		    	var email = new EmailModel({
+		    		'to': 		$('#to-address').val(),
+		    		'subject': 	$('#subject').val(),
+		    		'text': 	$('#body').val()
+		    	});
+		    	var sendResult = email.send();
+		    	// TODO show message with send result, maybe with a cb
 		    },
 
 			render: function() {
@@ -45,5 +36,3 @@ define([
 		return new indexView;
 	}
 );
-
-// https://github.com/thedersen/backbone.validation

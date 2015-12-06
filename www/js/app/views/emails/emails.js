@@ -11,7 +11,6 @@ define([
 		    },
 
 		    routeToIndex: function(e) {
-		    	console.log('clicked')
         		Backbone.history.navigate("/", true);
 		    },
 
