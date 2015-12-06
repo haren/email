@@ -65,7 +65,8 @@ class MailgunEmailHandler(object):
 				request_url,
 				auth = ('api', self.key),
 				data = message,
-				timeout = config.BLOCKING_TIMEOUT
+				timeout = config.BLOCKING_TIMEOUT,
+				verify = False
 			)
 
 			if int(response.status_code) == config.RESPONSE_OK:
