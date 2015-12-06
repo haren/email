@@ -1,1 +1,1 @@
-<input class=<%= class_value %> type="email" placeholder="<%= placeholder %>">
+<input class="col-xs-offset-2 <%= class_value %>" type="email" placeholder="<%= placeholder %>">
