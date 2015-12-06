@@ -9,7 +9,7 @@
 </div>
 <div id="cc-fields">
   <div>
-    <input id="cc-address" class="cc-input" type="email" placeholder="Cc address (optional)">
+    <input class="cc-input" type="email" placeholder="Cc address (optional)">
   </div>
   <div>
     <button type="button" id="cc-button" class="more-fields">Add more</button>
@@ -17,7 +17,7 @@
 </div>
 <div id="bcc-fields">
   <div>
-    <input id="bcc-address" class="bcc-input" type="email" placeholder="Bcc address (optional)">
+    <input class="bcc-input" type="email" placeholder="Bcc address (optional)">
   </div>
   <div>
     <button type="button" id="bcc-button" class="more-fields">Add more</button>
@@ -30,7 +30,7 @@
 </div>
 <div>
   <div>
-    <input id="body" type="text" placeholder="Email body" required>
+    <textarea id="body" cols="40" rows="5" placeholder="Email body" required></textarea>
   </div>
 </div>
 <div>

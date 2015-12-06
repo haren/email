@@ -39,7 +39,6 @@ class Validator(object):
 		Returns:
 	        True if all email addresses are valid, False otherwise
 	    """
-		addr_list = str(addr_list).split(',')
 		for addr in addr_list:
 			if not self.is_valid_email_address(addr):
 				return False

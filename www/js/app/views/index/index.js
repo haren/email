@@ -40,12 +40,30 @@ define([
 		    sendEmail: function(e) {
 		    	e.preventDefault();
 
+		    	var cc_addresses = [];
+		    	$(".cc-input").each(function() {
+				    var cc = $(this).val();
+		    		if (cc.length) {
+		    			cc_addresses.push(cc);
+		    		}
+				});
+
+				var bcc_addresses = [];
+				$(".bcc-input").each(function() {
+				    var bcc = $(this).val();
+		    		if (bcc.length) {
+		    			bcc_addresses.push(bcc);
+		    		}
+				});
+
 		    	var email = new EmailModel({
 		    		'to': 		$('#to-address').val(),
+		    		'cc': 		cc_addresses,
+		    		'bcc': 		bcc_addresses,
 		    		'subject': 	$('#subject').val(),
 		    		'text': 	$('#body').val()
 		    	});
-		    	var sendResult = email.send({
+		    	email.send({
 		    		callback: function(success, message) {
 		    			// TODO show message with send result
 		    			console.log(success, message)
