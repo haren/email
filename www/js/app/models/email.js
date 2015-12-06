@@ -62,12 +62,15 @@ define([
         this.set({
           status_updates: this.get('status_updates') + 1
         }, {silent: true});
-        console.log(this.get('status_updates'))
+
         var self = this;
-        if (this.get('status_updates') < 10) {
+        if (this.get('status_updates') < 7) {
           this.fetch({
             success: function() {
-              self.updateDerivedAttributes();
+              self._backOff(
+                self.get('status_updates'))(
+                  self.updateDerivedAttributes.bind(self)
+              );
             }
           });
         } else {
@@ -124,6 +127,16 @@ define([
           return response.email
         }
         return response;
+      },
+
+      _backOff: function(iter, floor, base) {
+        // borrowed from http://www.andjosh.com/2015/07/21/Exponential-Back-Off-in-JavaScript/
+        iter = iter || 0;
+        floor = floor || 500;
+        base = base || 2;
+        return function(done) {
+            setTimeout(done, floor * Math.pow(base, iter));
+        };
       }
     });
     return EmailModel;
