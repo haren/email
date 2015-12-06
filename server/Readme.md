@@ -20,8 +20,13 @@ docker build -t server .
 docker run --net="host" -d redis    
 
 # start server container and map the logs dir to host
-# IMPORTANT: replace REPO_PATH with the absolute path to your main repo directory
-docker run --net="host" -v REPO_PATH/server/logs:/app/server/logs -d server
+# IMPORTANT: replace REPO_PATH with the absolute path to your main repo directory,
+# AND YOUR_ACCESS_KEY and YOUR_SECRET_ACCESS_KEY with your AWS credentials.
+docker run --net="host" \
+	-v REPO_PATH/server/logs:/app/server/logs \
+	-e AWS_ACCESS_KEY_ID='YOUR_ACCESS_KEY' \
+	-e AWS_SECRET_ACCESS_KEY='YOUR_SECRET_ACCESS_KEY' \
+	-d server
 ```
 
 ## Shutting down the server
