@@ -35,6 +35,7 @@ class Application(tornado.web.Application):
                 "path": os.path.join(os.path.dirname(__file__), '../www/')}),
 
             # end user email functionality
+            (r"/emails/(?P<email_id>[^\/]*)",  EmailHandler),
             (r"/emails/*",  EmailsHandler),
 
             # Email handlers confirmation webhooks
@@ -144,9 +145,58 @@ class MainHandler(BaseHandler):
         return self.render('index.html')
 
 
-class EmailsHandler(BaseHandler):
+class EmailHandler(BaseHandler):
     """
     Email Handler class.
+
+    Servers single email data retrieval through its get method.
+
+    Used by the web app to query for send status updates.
+    """
+
+    def get(self, email_id):
+        """Retrieves an email sent by a given user.
+
+        If call succeedes, returns QUEUED status. A webhook has been setup for
+        delivery confirmations (server.DeliveryMailgunHandler).
+
+        Returns:
+            {
+                'status': Response status.
+                'email': An email object. Included only if status == 200.
+                'msg': Error message. Included only if status != 200.
+            }
+        """
+        try:
+            response = AjaxResponse()
+            user_id  = self.get_current_user()
+            main_logger.debug("Requested email %s list for user %s." % (email_id, user_id))
+
+            if not email_id:
+                response.add_code(config.RESPONSE_ERROR)
+                response.add_msg("Please provide a valid email id.")
+
+            handler_id, external_id = email_id.split(':')
+            email = main_db.get_email_data(handler_id, external_id)
+
+            response.add_code(config.RESPONSE_OK)
+            response.add_field('email', email)
+
+        except Exception, e:
+            main_logger.exception("Rest server exception: %s" % e)
+            response.add_code(config.RESPONSE_ERROR)
+            response.add_msg('Internal Error')
+
+        finally:
+            response = tornado.escape.json_encode(
+                response.get())
+            self.write(response)
+            self.finish()
+
+
+class EmailsHandler(BaseHandler):
+    """
+    Emails Handler class.
 
     Servers the email sending and email data retrieval functionalities
     through its post and get methods respectively.

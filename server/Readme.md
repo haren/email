@@ -56,6 +56,7 @@ All the responses are returned in `JSON` format (except for serving the web page
 
 | Path | Description |
 |----|----|
+| `/email/[email_id]` | GET details of an email with email_id. Used by the front end app to poll for email send updates. |
 | `/emails/` | GET lists all emails a given user (cookie-identified) has sent, POST sends an email. |
 | `/delivered/mailgun/` | POST servers as a handler for a delivery webhook confirmation for Mailgun service. |
 | `/delivered/ses/` | POST servers as a handler for a delivery webhook confirmation for AWS SES service. |

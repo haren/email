@@ -1,6 +1,7 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import redis
+
 import config
 import logger
 from helpers import epoch_millis
@@ -119,7 +120,8 @@ class RedisDb(object):
 			'bcc': ','.join(bcc_addr),
 			'subject': topic,
 			'text': text,
-			'sender_id': sender_id
+			'sender_id': sender_id,
+			'id': "%s:%s" % (handler_id, external_id)
 		}
 		if result == config.SEND_STATUS.SENT:
 			email_data['sent_at'] = now
