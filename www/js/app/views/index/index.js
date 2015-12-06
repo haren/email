@@ -7,6 +7,14 @@ define([
 		var indexView = Backbone.View.extend({
 			el: 'body',
 
+			events: {
+		        "click #btn-emails" : "routeToEmails"
+		    },
+
+			routeToEmails: function(e) {
+        		Backbone.history.navigate("/emails", true);
+		    },
+
 			render: function() {
 				$(this.el).html(_.template(indexTemplate));
 			}

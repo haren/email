@@ -3,15 +3,21 @@ define([
 	'underscore',
 	'backbone',
 	'views/index/index',
+	'views/emails/emails',
 	],
-	function($, _, Backbone, indexView) {
+	function($, _, Backbone, indexView, emailsView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
+				'emails'  : 'emails',
 				'*actions': 'index'
 			},
 
 			index: function() {
 				indexView.render();
+			},
+
+			emails: function() {
+				emailsView.render();
 			}
 		});
 
