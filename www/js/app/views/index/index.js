@@ -25,8 +25,12 @@ define([
 		    		'subject': 	$('#subject').val(),
 		    		'text': 	$('#body').val()
 		    	});
-		    	var sendResult = email.send();
-		    	// TODO show message with send result, maybe with a cb
+		    	var sendResult = email.send({
+		    		callback: function(success, message) {
+		    			// TODO show message with send result
+		    			console.log(success, message)
+		    		}
+		    	});
 		    },
 
 			render: function() {
