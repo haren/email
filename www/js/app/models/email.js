@@ -6,6 +6,7 @@ define([
     var EmailModel = Backbone.Model.extend({
       urlRoot: '/emails',
       defaults: {
+        id: null,
         to: null,
         cc: [],
         bcc: [],
@@ -15,7 +16,8 @@ define([
         sent_at: null,
         rejected_at: null,
         status: null,
-        status_at: null
+        status_at: null,
+        status_updates: 0
       },
       initialize: function() {
           this.updateDerivedAttributes();
@@ -48,6 +50,33 @@ define([
             status: new_status,
             status_at: new Date(parseInt(new_status_at)).toString()
         }, {silent:false}); //trigger the change for the views to update
+
+        // if email queued poll the API to see if SENT / REJECTED
+        // uses exponential back-off
+        if (this.get('status') == 'QUEUED') {
+          this.pollForStateUpdate();
+        }
+      },
+
+      pollForStateUpdate: function() {
+        this.set({
+          status_updates: this.get('status_updates') + 1
+        }, {silent: true});
+        console.log(this.get('status_updates'))
+        var self = this;
+        if (this.get('status_updates') < 10) {
+          this.fetch({
+            success: function() {
+              self.updateDerivedAttributes();
+            }
+          });
+        } else {
+          // set to REJECTED
+          this.set({
+              status: "REJECTED",
+              status_at: new Date().toString()
+          }, {silent:false}); //trigger the change for the views to update
+        }
       },
 
       send: function (options) { // options object used to pass a callback by client object.
@@ -78,7 +107,6 @@ define([
 
       validate: function(attrs) {
         if (!attrs.to) {
-          console.log(attrs.to);
           return "Provide to address."
         } else if (!attrs.subject) {
           return "Provide email subject."
@@ -88,6 +116,14 @@ define([
           return "This email has already been sent.";
         }
         // success, no need to return anything - save will continue.
+      },
+
+      parse: function(response, options) {
+        // fetching both by collection and model - different endpoint data structure
+        if (response.status && response.email) {
+          return response.email
+        }
+        return response;
       }
     });
     return EmailModel;

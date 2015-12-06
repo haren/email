@@ -13,14 +13,14 @@ define([
 				this.$el.html(_.template(EmailCollectionTemplate));
 
 				var self=this;
+				// load all emails in the collection
+				// the collection view will update automatically.
 				self.collection.each(function(email){
 		            var emailView = new EmailView({
 		            	model: email,
-		            	el: self.$('#emails-list') // make sure to .append(), not .html() in child.
+		            	tagName: 'tr',
 		            });
-		            emailView.render();
-					emailView.delegateEvents();
-
+		            self.$el.append(emailView.render().el);
 				}, self);
 			}
 		});
