@@ -42,6 +42,10 @@ docker stop SERVER_CONTAIENR_ID
 
 ## Usage
 
+### Request Format
+
+All `POST` requests are expected to arrive in `JSON` format. Other formats are not supported.
+
 ### Response Format
 
 All the responses are returned in `JSON` format (except for serving the web page). Sample response is presented below. Response always returns HTML code `200` and the status indicates request handling effect.
