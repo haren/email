@@ -211,11 +211,18 @@ class EmailsHandler(BaseHandler):
         try:
             response  = AjaxResponse()
             user_id   = self.get_current_user()
-            to_addr   = self.get_argument('to', None)
-            cc_addr   = self.get_argument('cc', None)
-            bcc_addr  = self.get_argument('bcc', None)
-            topic     = self.get_argument('subject', None)
-            text      = self.get_argument('text', None)
+
+            data = tornado.escape.json_decode(
+                self.request.body)
+
+            to_addr   = data.get('to', None)
+            cc_addr   = data.get('cc', None)
+            bcc_addr  = data.get('bcc', None)
+            topic     = data.get('subject', None)
+            text      = data.get('text', None)
+
+            main_logger.debug(self.request.body)
+            main_logger.debug("%s %s %s" % (to_addr, topic, text))
 
             valid, message = validator.is_email_request_valid(
                 to_addr, cc_addr, bcc_addr, topic, text)
