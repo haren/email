@@ -30,6 +30,10 @@ class Application(tornado.web.Application):
         Defines the routing and server settings.
         """
         handlers = [
+            # static files handler
+            (r"/www/(.*)", tornado.web.StaticFileHandler, {
+                "path": os.path.join(os.path.dirname(__file__), '../www/')}),
+
             # end user email functionality
             (r"/emails/*",  EmailsHandler),
 
@@ -45,7 +49,6 @@ class Application(tornado.web.Application):
             cookie_secret   = config.COOKIE_SECRET,
             template_path   = os.path.join(
                                 os.path.dirname(__file__), '../www/'),
-            static_path     = os.path.dirname(__file__),
             xsrf_cookies    = True,
             debug           = True,
         )
@@ -323,7 +326,7 @@ class DefaultHandler(BaseHandler):
             if 'favicon' not in self.request.uri:
                 # favicon requests often come down from browsers
                 main_logger.warning("Incorrect url requested.")
-                response.add_msg("Incorrect request url.")
+                response.add_msg("Incorrect request url %s." % self.request.uri)
 
             response.add_code(config.RESPONSE_NOTFOUND)
 
