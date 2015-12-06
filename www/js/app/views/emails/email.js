@@ -5,12 +5,17 @@ define([
 	'text!views/emails/templates/emailView.tpl',
 	], function($, _, Backbone, emailTemplate) {
 		var EmailView = Backbone.View.extend({
-			// el: '', // has to be passed from parent.
+			el: '', // pass from parent.
+			template: _.template(emailTemplate),
+			model: null, // pass from parent
 			events: {},
 
+			initialize: function() {
+				this.listenTo(this.model, "change", this.render);
+			},
+
 			render: function() {
-				console.log(this.$el);
-				this.$el.append(_.template(emailTemplate));
+				this.$el.append(this.template(this.model.toJSON()));
 			}
 		});
 		return EmailView;

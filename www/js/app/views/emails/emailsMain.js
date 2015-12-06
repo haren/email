@@ -21,7 +21,7 @@ define([
 			render: function() {
 				$(this.el).html(_.template(emailsTemplate));
 
-				// make sure to initalize only once.
+				// make sure to initialize only once
 				this.childView.collection =
 					this.childView.collection || new EmailsCollection();
 

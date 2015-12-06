@@ -13,9 +13,43 @@ define([
         text: null,
         queued_at: null,
         sent_at: null,
-        rejected_at: null
+        rejected_at: null,
+        status: null,
+        status_at: null
       },
-      initialize: function(){},
+      initialize: function() {
+          this.updateDerivedAttributes();
+
+          this.on( // update derived property status and status_at
+            'change:queued_at change:sent_at change:rejected_at',
+            this.updateDerivedAttributes, this
+          );
+      },
+      updateDerivedAttributes: function() {
+        var new_status    = null;
+        var new_status_at = null;
+
+        if (this.get('sent_at')) {
+          new_status = "SENT";
+          new_status_at = this.get('sent_at');
+        } else if (this.get('rejected_at')) {
+          new_status = "REJECTED";
+          new_status_at = this.get('rejected_at');
+        } else if (this.get('queued_at')) {
+          new_status = "QUEUED";
+          new_status_at = this.get('queued_at');
+        }
+
+        if (new_status_at) {
+          new_status_at = parseInt(new_status_at);
+        }
+
+        this.set({
+            status: new_status,
+            status_at: new Date(parseInt(new_status_at)).toString()
+        }, {silent:false}); //trigger the change for the views to update
+      },
+
       send: function (options) { // options object used to pass a callback by client object.
         if (!this.isValid()) {
           if (options.callback) {
@@ -41,6 +75,7 @@ define([
           }
         });
       },
+
       validate: function(attrs) {
         if (!attrs.to) {
           console.log(attrs.to);

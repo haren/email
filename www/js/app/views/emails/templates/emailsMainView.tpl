@@ -1,4 +1,4 @@
-<p>Emails list - from a backbone view.</p>
+<p>Your sent emails list.</p>
 
 <div id="emails-list-container">
 </div>
