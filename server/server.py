@@ -194,8 +194,8 @@ class EmailsHandler(BaseHandler):
 
         Args:
             to: A string containing a valid email address of the main recipient.
-            cc: A string containing a comma-separated list of cc addresses.
-            bcc: A string containing a comma-separated list of bcc addresses.
+            cc: A list of cc addresses.
+            bcc: A list of bcc addresses.
             subject: A string containing email subject. Cannot be empty.
             text: A string containing email body. Cannot be empty.
 
@@ -221,9 +221,6 @@ class EmailsHandler(BaseHandler):
             topic     = data.get('subject', None)
             text      = data.get('text', None)
 
-            main_logger.debug(self.request.body)
-            main_logger.debug("%s %s %s" % (to_addr, topic, text))
-
             valid, message = validator.is_email_request_valid(
                 to_addr, cc_addr, bcc_addr, topic, text)
 
@@ -233,11 +230,11 @@ class EmailsHandler(BaseHandler):
                 return
                 yield
 
-            # valid, convertion safe
+            # valid, convertion safe, make sure no duplicates
             if cc_addr and len(cc_addr):
-                cc_addr = str(cc_addr).split(',')
+                cc_addr = [str(x) for x in set(cc_addr)]
             if bcc_addr and len(bcc_addr):
-                bcc_addr = str(bcc_addr).split(',')
+                bcc_addr = [str(x) for x in set(cc_addr)]
 
             status = yield tornado.gen.Task(
                 main_email_handler.send_email,

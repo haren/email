@@ -62,8 +62,9 @@ class MandrillEmailHandler(object):
 		response = yield tornado.gen.Task(
 			self.http_client.fetch, request)
 
-		if int(response.code) == config.RESPONSE_OK:
-			body = json.loads(response.body)
+		body = json.loads(response.body)
+		if (int(response.code) == config.RESPONSE_OK
+				and body[0]['status'] == 'sent'):
 			# Each sent email gets assigned a different id. First (To address) used.
 			email_id = body[0]['_id']
 			callback(config.SEND_STATUS.SENT, email_id)
