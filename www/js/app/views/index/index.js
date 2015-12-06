@@ -12,7 +12,7 @@ define([
 			events: {
 		        "click #btn-emails" 		: "routeToEmails",
 		        "click .more-fields"		: "addMoreInputFields",
-		        "submit #send-email-form"	: "sendEmail"
+		        "submit #send-email-form"	: "formSubmitted"
 		    },
 
 			routeToEmails: function(e) {
@@ -37,9 +37,24 @@ define([
 		    	}
 		    },
 
-		    sendEmail: function(e) {
+		    formSubmitted: function(e) {
 		    	e.preventDefault();
+		    	this.flipButtonState("#btn-submit");
+		    	this.sendEmail();
+		    },
 
+		    flipButtonState: function(button_id) {
+		    	$(button_id).attr(
+		    		"disabled", !$(button_id).attr("disabled")
+		    	);
+		    },
+
+		    cleanFormFields: function() {
+		    	// do not clean body, could be too frustrating.
+		    	$('#send-email-form').find("input[type=text], input[type=email]").val("");
+		    },
+
+		    sendEmail: function(e) {
 		    	var cc_addresses = [];
 		    	$(".cc-input").each(function() {
 				    var cc = $(this).val();
@@ -63,10 +78,18 @@ define([
 		    		'subject': 	$('#subject').val(),
 		    		'text': 	$('#body').val()
 		    	});
+
+		    	var self = this;
 		    	email.send({
 		    		callback: function(success, message) {
 		    			// TODO show message with send result
-		    			console.log(success, message)
+		    			console.log(success, message);
+		    			self.flipButtonState("#btn-submit");
+		    			if (success && (message == "QUEUED" || message == "SENT")) {
+		    				self.cleanFormFields();
+		    			} else { // unblock the button for potential corrections
+		    				self.flipButtonState("#btn-submit");
+		    			}
 		    		}
 		    	});
 		    },

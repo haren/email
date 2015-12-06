@@ -94,15 +94,15 @@ define([
           success: function(model, response, opts){
             if (options.callback) {
               if (response.status == 200) {
-                options.callback(true, response);
+                options.callback(true, response.send_status);
               } else {
-                options.callback(false, response);
+                options.callback(false, response.msg);
               }
             }
           },
           error: function(model, response, opts){
             if (options.callback) {
-              options.callback(false, response);
+              options.callback(false, response.msg);
             }
           }
         });

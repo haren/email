@@ -54,7 +54,7 @@
   <div class="form-group">
       <div class="col-lg-10 col-lg-offset-2">
         <button id="btn-emails" type="button" class="btn btn-default">Sent mails</button>
-        <button type="submit" class="btn btn-primary">Send your email!</button>
+        <button id="btn-submit" type="submit" class="btn btn-primary">Send your email!</button>
       </div>
     </div>
 </fieldset>
