@@ -2,17 +2,13 @@ define([
 	'jquery',
 	'underscore',
 	'backbone',
-	'backboneCollectionView',
 	'collections/emails',
-	'views/emails/email',
+	'views/emails/emails',
 	'text!views/emails/templates/emailsMainView.tpl',
-	], function($, _, Backbone, BackboneCollectionView, EmailsCollection, EmailView, emailsTemplate) {
+	], function($, _, Backbone, EmailsCollection, EmailCollectionView, emailsTemplate) {
 		var emailsView = Backbone.View.extend({
 			el: 'body',
-			// selectable: false,
-			// collection: new EmailsCollection(),
-			// modelView: EmailView,
-			childView: new EmailView(),
+			childView: new EmailCollectionView(),
 
 			events: {
 		        "click #btn-back" : "routeToIndex"
@@ -23,16 +19,20 @@ define([
 		    },
 
 			render: function() {
-				var emails = new EmailsCollection();
-				emails.fetch({
-					success: function() { console.log(emails.models)}
-				});
 				$(this.el).html(_.template(emailsTemplate));
-				this.childView.$el = this.$('#emails-list');
-				console.log(this.childView);
-				console.log(this.childView.$el);
-				this.childView.render();
-				this.childView.delegateEvents();
+
+				// make sure to initalize only once.
+				this.childView.collection =
+					this.childView.collection || new EmailsCollection();
+
+				var self = this;
+				this.childView.collection.fetch({
+					success: function() {
+						self.childView.$el = self.$('#emails-list-container');
+						self.childView.render();
+						self.childView.delegateEvents();
+					}
+				});
 			}
 		});
 		return new emailsView;
