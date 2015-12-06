@@ -23,7 +23,6 @@ define([
           }
           return;
         }
-        console.log('x');
         // perform the POST request to send.
         this.save(null, { //pass null to save all attributes
           success: function(model, response, opts){

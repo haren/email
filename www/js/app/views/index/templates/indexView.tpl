@@ -7,14 +7,20 @@
     <input id="to-address" type="email" placeholder="Send To (single address)" required>
   </div>
 </div>
-<div>
+<div id="cc-fields">
   <div>
-    <input id="cc-address" type="email" placeholder="Cc address (optional)">
+    <input id="cc-address" class="cc-input" type="email" placeholder="Cc address (optional)">
+  </div>
+  <div>
+    <button type="button" id="cc-button" class="more-fields">Add more</button>
   </div>
 </div>
-<div>
+<div id="bcc-fields">
   <div>
-    <input id="bcc-address" type="email" placeholder="Bcc address (optional)">
+    <input id="bcc-address" class="bcc-input" type="email" placeholder="Bcc address (optional)">
+  </div>
+  <div>
+    <button type="button" id="bcc-button" class="more-fields">Add more</button>
   </div>
 </div>
 <div>
