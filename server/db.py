@@ -146,6 +146,20 @@ class RedisDb(object):
 			"email:%s:%s" % (handler_id, external_id), 'sent_at', now)
 
 
+	def set_email_rejected(self, handler_id, external_id):
+		"""Marks email identified by <HANDLER_ID>:<EXTERNAL_ID> as rejected.
+
+	    Args:
+	    	handler_id: Id of the email handler that was used to send the email.
+	        external_id: External id that the service assigned to the email.
+	    Returns:
+	    	The result of redis operation.
+	    """
+		now = epoch_millis()
+		return self.db_r.hset(
+			"email:%s:%s" % (handler_id, external_id), 'rejected_at', now)
+
+
 	#############################################################################
 	# EMAIL HANDLERS FUNCTIONALITY
 	#############################################################################

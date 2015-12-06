@@ -41,6 +41,10 @@ class Application(tornado.web.Application):
             (r"/delivered/mailgun/*",   DeliveryMailgunHandler),
             (r"/delivered/ses/*",       DeliverySesHandler),
 
+            # Email rejection confirmation webhooks
+            (r"/rejected/mailgun/*",   RejectionMailgunHandler),
+            (r"/rejected/ses/*",       RejectionSesHandler),
+
             # Main handlers - serving static content & handling url errors.
             (r"/*",         MainHandler),
             (r".*",         DefaultHandler)
@@ -313,6 +317,70 @@ class DeliverySesHandler(BaseHandler):
 
             main_logger.debug(
                 "SES email %s sent confirmation received." % external_id)
+
+            response.add_code(config.RESPONSE_OK)
+
+        except Exception, e:
+            main_logger.exception(e)
+            response.add_code(config.RESPONSE_ERROR)
+        finally:
+            json_ = tornado.escape.json_encode(response.get())
+            self.write(json_)
+            self.finish()
+
+
+class RejectionMailgunHandler(BaseHandler):
+    """
+    Handler prepared for the Mailgun rejection webhook.
+    """
+
+    def post(self):
+        """Marks the email sent by a mailgun handler as sent in the database.
+        """
+        try:
+            response    = AjaxResponse()
+            external_id = self.get_argument("Message-Id", None)
+
+            if external_id:
+                external_id = external_id.replace('<', '').replace('>', '')
+
+
+            main_db.set_email_rejected(
+                config.EMAIL_HANDLERS.MAILGUN.value, external_id)
+
+            main_logger.debug(
+                "Mailgun email %s rejection received." % external_id)
+
+            response.add_code(config.RESPONSE_OK)
+
+        except Exception, e:
+            main_logger.exception(e)
+            response.add_code(config.RESPONSE_ERROR)
+        finally:
+            json_ = tornado.escape.json_encode(response.get())
+            self.write(json_)
+            self.finish()
+
+
+class RejectionSesHandler(BaseHandler):
+    """
+    Handler prepared for the Ses rejection webhook.
+    """
+
+    def post(self):
+        """Marks the email sent by a SES handler as sent in the database.
+        """
+        try:
+            response    = AjaxResponse()
+
+            message     = json.loads(self.request.body)["Message"]
+            external_id = json.loads(message)["mail"]["messageId"]
+
+            main_db.set_email_rejected(
+                config.EMAIL_HANDLERS.SES.value, external_id)
+
+            main_logger.debug(
+                "SES email %s rejection received." % external_id)
 
             response.add_code(config.RESPONSE_OK)
 
