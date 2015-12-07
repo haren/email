@@ -15,3 +15,5 @@ The project is currently deployed [here](http://ec2-52-31-146-15.eu-west-1.compu
 - Some rejections (e.g. Maligun) can take up to a few minutes to arrive through the webhook (patience advised).
 - Mandrill sometimes confirms email send even though the address is incorrect (validation explained below). So it is possible to get a sent confirmation even though the email does not get send in this case.
 - Email body is not cleaned on purpose on form submission. In case user sends to a wrong address or something else go wrong, retyping the whole body could be frustrating.
+- Users are identified using a simple secret cookie mechanism.
+
