@@ -98,6 +98,9 @@ class BaseHandler(tornado.web.RequestHandler):
 
     SUPPORTED_METHODS = ("GET", "POST")
 
+    def check_xsrf_cookie(self):
+        pass
+
     def write(self, *args, **kwargs):
         main_logger.debug("Writing %s." % args)
         # set correct header type
