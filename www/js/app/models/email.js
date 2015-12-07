@@ -28,7 +28,6 @@ define([
           );
       },
       updateDerivedAttributes: function() {
-        console.log("Updating for", this.get('id'));
         var new_status    = null;
         var new_status_at = null;
 

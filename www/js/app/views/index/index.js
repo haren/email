@@ -111,7 +111,7 @@ define([
 		    				self.showMessage(
 		    					"error",
 		    					"Your email to " + email.get('to') +
-		    					" could not be sent. Please try again later."
+		    					" could not be sent. " + message
 		    				);
 		    			}
 		    		}
