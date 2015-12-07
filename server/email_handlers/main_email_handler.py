@@ -8,7 +8,6 @@ import logger
 import config
 
 from mandrill_handler 	import MandrillEmailHandler
-from sendgrid_handler 	import SendgridEmailHandler
 from ses_handler 		import SesEmailHandler
 from mailgun_handler 	import MailgunEmailHandler
 
