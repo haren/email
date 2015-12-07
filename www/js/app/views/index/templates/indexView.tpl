@@ -29,7 +29,7 @@
           <div>
             <label for="bcc-input" class="col-lg-2 control-label">Bcc</label>
             <div class="col-lg-10">
-              <input id="bcc-input" class="cc-input form-control" type="email" placeholder="Bcc address (optional)">
+              <input id="bcc-input" class="bcc-input form-control" type="email" placeholder="Bcc address (optional)">
             </div>
           </div>
         </div>
@@ -60,4 +60,6 @@
         </div>
     </fieldset>
   </form>
+
+
 </div>
