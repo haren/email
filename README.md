@@ -6,4 +6,4 @@ The server documentation can be found in the [server](https://github.com/haren/e
 
 The web app documentation can be found in the [www](https://github.com/haren/email/blob/master/www) directory.
 
-The project is currently deployed [here](http://ec2-52-31-146-15.eu-west-1.compute.amazonaws.com/).
+The project is currently deployed [here](http://ec2-52-31-146-15.eu-west-1.compute.amazonaws.com/) and supports sending plain text emails.
