@@ -28,7 +28,7 @@ define([
 				var self = this;
 				this.childView.collection.fetch({
 					success: function() {
-						self.childView.$el = self.$('#emails-list');
+						self.childView.$el = self.$('#emails-list-container');
 						self.childView.render();
 						self.childView.delegateEvents();
 					}

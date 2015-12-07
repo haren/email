@@ -20,7 +20,7 @@ define([
 		            	model: email,
 		            	tagName: 'tr',
 		            });
-		            self.$el.append(emailView.render().el);
+		            self.$('#emails-list').append(emailView.render().el);
 				}, self);
 			}
 		});
