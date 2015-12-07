@@ -48,7 +48,7 @@ define([
 
         this.set({
             status: new_status,
-            status_at: new Date(parseInt(new_status_at)).toString()
+            status_at: new Date(parseInt(new_status_at));
         }, {silent:false}); //trigger the change for the views to update
 
         // if email queued poll the API to see if SENT / REJECTED
