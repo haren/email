@@ -7,7 +7,7 @@ define([
 	'text!views/emails/templates/emailsMainView.tpl',
 	], function($, _, Backbone, EmailsCollection, EmailCollectionView, emailsTemplate) {
 		var emailsView = Backbone.View.extend({
-			el: 'body',
+			el: '#main',
 			childView: new EmailCollectionView(),
 
 			events: {

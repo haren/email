@@ -7,7 +7,7 @@ define([
 	'models/email'
 	], function($, _, Backbone, indexTemplate, emailInputTemplate, EmailModel) {
 		var indexView = Backbone.View.extend({
-			el: 'body',
+			el: '#main',
 
 			events: {
 		        "click #btn-emails" 		: "routeToEmails",
@@ -94,8 +94,15 @@ define([
 		    	});
 		    },
 
+		    showMessage: function(status, message) {
+		    	// status: success info / warning / danger
+		    	console.log($("#alert-" + status));
+		    	$("#alert-" + status).show();
+		    },
+
 			render: function() {
 				$(this.el).html(_.template(indexTemplate));
+				this.showMessage("success");
 			}
 		});
 		return new indexView;
