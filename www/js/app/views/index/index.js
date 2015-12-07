@@ -95,7 +95,6 @@ define([
 		    				self.addSentEmailToCollection(email);
 			    			self.cleanFormFields();
 			    			if (message == "QUEUED") {
-			    				console.log(email);
 			    				self.showMessage(
 			    					"warning",
 			    					"Your email to " + email.get('to') +
@@ -123,7 +122,6 @@ define([
 		    addSentEmailToCollection: function(email) {
 		    	window.emailsCollection = window.emailsCollection || new EmailsCollection();
 		    	window.emailsCollection.add(email);
-		    	console.log(window.emailsCollection);
 		    },
 
 		    initializeToastr: function() {

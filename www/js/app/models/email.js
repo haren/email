@@ -47,6 +47,10 @@ define([
           new_status_at = parseInt(new_status_at);
         }
 
+        if (new_status != "QUEUED") {
+          this.notifyOnStatusChange(this.get('status'), new_status);
+        }
+
         this.set({
             status: new_status,
             status_at: new Date(parseInt(new_status_at))
@@ -56,18 +60,22 @@ define([
         // uses exponential back-off
         if (this.get('status') == 'QUEUED') {
           this.pollForStateUpdate();
-        } else if (this.get('status') == "SENT") {
-          console.log("Showing for ", this.get('id'));
+        }
+      },
+
+      notifyOnStatusChange: function(oldStatus, newStatus) {
+        // is show from here because if user doesn't enter the email
+        // list and stays in the send (index view) the view for email is never created
+        if (oldStatus == "QUEUED" && newStatus == "SENT") {
           window.showMessage(
             "success",
             "Your email to " + this.get('to') + " has been sent!"
           );
-        } else if (this.get('status') == "REJECTED") {
+        } else if (oldStatus == "QUEUED" && newStatus == "REJECTED") {
           window.showMessage(
-            "success",
+            "error",
             "Your email to " + this.get('to') + " has been rejected."
           );
-
         }
       },
 
