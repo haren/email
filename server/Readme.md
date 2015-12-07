@@ -3,7 +3,7 @@
 This directory contains the backend part of the project.
 
 ## Installation and Requirements
-The project can be installed on any UNIX system. The only external requirement is `docker`. Installation instructions can be found [here](http://docs.docker.com/engine/installation/). 
+The project can be installed on any UNIX system. The only external requirement is `docker`. Installation instructions can be found [here](http://docs.docker.com/engine/installation/).
 
 Mac OS requires also a docker porting solution, such as [`docker machine`](https://docs.docker.com/machine/) (recommended) or [`boot2docker`](http://boot2docker.io/)
 
@@ -14,10 +14,10 @@ To prepare the server to run, docker images need to be built (or pulled from doc
 
 ```
 # build server image
-docker build -t server .            
+docker build -t server .
 
 # start redis container (and pull from hub if necessary)
-docker run --net="host" -d redis    
+docker run --net="host" -d redis
 
 # start server container and map the logs dir to host
 # IMPORTANT: replace REPO_PATH with the absolute path to your main repo directory,
@@ -48,10 +48,11 @@ All `POST` requests are expected to arrive in `JSON` format. Other formats are n
 
 ### Response Format
 
-All the responses are returned in `JSON` format (except for serving the web page). Sample response is presented below. Response always returns HTML code `200` and the status indicates request handling effect.
+All the responses are returned in `JSON` format (except for serving the web page). Sample response (for the `POST` request to `/emails/`) is presented below. Response always returns HTML code `200` and the status indicates request handling effect.
 
  - `status` is an integer number,
  - `send_status` is a string indicating the requested email send status.
+ - `id` is a string representing the id assigned to the email by the system.
 ```
 {"status": 200, "send_status": "SENT"}
 ```

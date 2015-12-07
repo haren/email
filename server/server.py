@@ -257,6 +257,7 @@ class EmailsHandler(BaseHandler):
             {
                 'status': Response status.
                 'send_status': 'SENT' / 'QUEUED' / 'FAILED'. Included only if status == 200.
+                'email_id': Email id. Included only if satus == 200.
                 'msg': Error message. Included only if status != 200.
             }
         """
@@ -284,17 +285,20 @@ class EmailsHandler(BaseHandler):
                 return
                 yield
 
-            # valid, convertion safe, make sure no duplicates
+            # valid, conversion safe, make sure no duplicates
             if cc_addr and len(cc_addr):
                 cc_addr = [str(x) for x in set(cc_addr)]
             if bcc_addr and len(bcc_addr):
                 bcc_addr = [str(x) for x in set(cc_addr)]
 
-            status = yield tornado.gen.Task(
+            cb_result = yield tornado.gen.Task(
                 main_email_handler.send_email,
                 to_addr, cc_addr, bcc_addr,
                 topic, text, user_id
             )
+            # cb_result[0] - args, cb_result[1] - kwargs
+            # http://www.tornadoweb.org/en/stable/gen.html#tornado.gen.Arguments
+            status, handler_id, external_id = cb_result[0][0], cb_result[0][1], cb_result[0][2]
 
             main_logger.debug(
                 "Email %s to %s by user %s sent with status %s."
@@ -304,6 +308,7 @@ class EmailsHandler(BaseHandler):
                 response.add_code(config.RESPONSE_ERROR)
             else:
                 response.add_code(config.RESPONSE_OK)
+                response.add_field('id', "%s:%s" % (handler_id, external_id))
             response.add_field('send_status', status.name)
 
         except Exception, e:

@@ -55,7 +55,10 @@ class MainEmailHandler(object):
 	        text: Email body.
 	        sender_id: User id of the user requesting the email to be sent.
 	    Returns:
+	    	(SendStatus, HandlerId, ExternalId)
 	    	SendStatus: FAILED/QUEUED/SENT
+	    	HandlerId: Id identifying which handler was used to send the email, used to construct the email id
+	    	ExternalId: External Id assigned to email by the used provider, used to construct the email id
 	    """
 
 		# try all handlers until once sends / queues message
@@ -65,7 +68,7 @@ class MainEmailHandler(object):
 			current_handler = self.handlers.get(handler_id, None)
 			if not current_handler:
 				self.log.warning("Couldn't obtain handler.")
-				callback(config.SEND_STATUS.FAILED)
+				callback(config.SEND_STATUS.FAILED, None, None)
 				return # failed to find a working handler
 
 			# attempt to send email using the current handler
@@ -90,13 +93,13 @@ class MainEmailHandler(object):
 
 				# only continue with the iterations if failed to send.
 				# reaching this close suggests sent / queued, function can exit
-				callback(result)
+				callback(result, handler_id, external_id)
 				return
 
 		else: # no success / queued email has been returned, sending failed.
 			self.log.warning(
 				"No handler managed to send an email %s to %s successfully."
-				% (topic, to_addr	)
+				% (topic, to_addr)
 			)
 
 			self.db.save_email(
@@ -104,5 +107,5 @@ class MainEmailHandler(object):
 				text, sender_id, handler_id,
 				None, config.SEND_STATUS.FAILED)
 
-			callback(config.SEND_STATUS.FAILED)
+			callback(config.SEND_STATUS.FAILED, handler_id, None)
 			return
