@@ -96,10 +96,6 @@ class BaseHandler(tornado.web.RequestHandler):
     Aggregates methods shared by all handlers.
     """
 
-    def check_xsrf_cookie(self):
-        # TODO REMOVE AFTER TESTING
-        pass
-
     SUPPORTED_METHODS = ("GET", "POST")
 
     def write(self, *args, **kwargs):
