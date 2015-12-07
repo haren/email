@@ -79,7 +79,6 @@ define([
       },
 
       pollForStateUpdate: function() {
-        console.log("Polling for", this.get('id'));
         this.set({
           status_updates: this.get('status_updates') + 1
         }, {silent: true});
