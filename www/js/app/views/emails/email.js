@@ -13,7 +13,6 @@ define([
 				if (this.model.get('status') == "SENT") {
 					return "success";
 				} else if (this.model.get('status') == "REJECTED") {
-					console.log("NO ZWRACAM KUHWA")
 					return "danger";
 				} else if (this.model.get('status') == "QUEUED") {
 					return "warning";

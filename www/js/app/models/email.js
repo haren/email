@@ -28,6 +28,7 @@ define([
           );
       },
       updateDerivedAttributes: function() {
+        console.log("Updating for", this.get('id'));
         var new_status    = null;
         var new_status_at = null;
 
@@ -55,10 +56,23 @@ define([
         // uses exponential back-off
         if (this.get('status') == 'QUEUED') {
           this.pollForStateUpdate();
+        } else if (this.get('status') == "SENT") {
+          console.log("Showing for ", this.get('id'));
+          window.showMessage(
+            "success",
+            "Your email to " + this.get('to') + " has been sent!"
+          );
+        } else if (this.get('status') == "REJECTED") {
+          window.showMessage(
+            "success",
+            "Your email to " + this.get('to') + " has been rejected."
+          );
+
         }
       },
 
       pollForStateUpdate: function() {
+        console.log("Polling for", this.get('id'));
         this.set({
           status_updates: this.get('status_updates') + 1
         }, {silent: true});

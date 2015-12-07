@@ -23,7 +23,7 @@ define([
 
 				// make sure to initialize only once
 				this.childView.collection =
-					this.childView.collection || new EmailsCollection();
+					this.childView.collection || window.emailsCollection || new EmailsCollection();
 
 				var self = this;
 				this.childView.collection.fetch({

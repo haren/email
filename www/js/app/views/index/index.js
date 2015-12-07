@@ -2,10 +2,12 @@ define([
 	'jquery',
 	'underscore',
 	'backbone',
+	'toastr',
+	'collections/emails',
 	'text!views/index/templates/indexView.tpl',
 	'text!views/index/templates/inputEmail.tpl',
 	'models/email'
-	], function($, _, Backbone, indexTemplate, emailInputTemplate, EmailModel) {
+	], function($, _, Backbone, toastr, EmailsCollection, indexTemplate, emailInputTemplate, EmailModel) {
 		var indexView = Backbone.View.extend({
 			el: '#main',
 
@@ -13,6 +15,10 @@ define([
 		        "click #btn-emails" 		: "routeToEmails",
 		        "click .more-fields"		: "addMoreInputFields",
 		        "submit #send-email-form"	: "formSubmitted"
+		    },
+
+		    initialize: function() {
+		    	this.initializeToastr();
 		    },
 
 			routeToEmails: function(e) {
@@ -82,27 +88,80 @@ define([
 		    	var self = this;
 		    	email.send({
 		    		callback: function(success, message) {
-		    			// TODO show message with send result
-		    			console.log(success, message);
+		    			 // unblock the button for potential corrections / next sends
 		    			self.flipButtonState("#btn-submit");
-		    			if (success && (message == "QUEUED" || message == "SENT")) {
-		    				self.cleanFormFields();
-		    			} else { // unblock the button for potential corrections
-		    				self.flipButtonState("#btn-submit");
+
+		    			if (success) {
+		    				self.addSentEmailToCollection(email);
+			    			self.cleanFormFields();
+			    			if (message == "QUEUED") {
+			    				console.log(email);
+			    				self.showMessage(
+			    					"warning",
+			    					"Your email to " + email.get('to') +
+			    					" has been queued. We'll notify you when it's sent or rejected."
+			    				);
+			    				email.pollForStateUpdate();
+			    			} else if (success &&  message == "SENT") {
+			    				self.showMessage(
+			    					"success",
+			    					"Your email to " + email.get('to') + " has been sent!"
+			    				);
+			    			}
+		    			} else {
+		    				self.showMessage(
+		    					"error",
+		    					"Your email to " + email.get('to') +
+		    					" could not be sent. Please try again later."
+		    				);
 		    			}
 		    		}
 		    	});
+		    	this.showMessage("info", "Your request has been sent to our servers.");
+		    },
+
+		    addSentEmailToCollection: function(email) {
+		    	window.emailsCollection = window.emailsCollection || new EmailsCollection();
+		    	window.emailsCollection.add(email);
+		    	console.log(window.emailsCollection);
+		    },
+
+		    initializeToastr: function() {
+		    	toastr.options = {
+				  "closeButton": false,
+				  "debug": false,
+				  "newestOnTop": true,
+				  "progressBar": false,
+				  "positionClass": "toast-bottom-right",
+				  "preventDuplicates": false,
+				  "onclick": null,
+				  "showDuration": "300",
+				  "hideDuration": "1000",
+				  "timeOut": "5000",
+				  "extendedTimeOut": "1000",
+				  "showEasing": "swing",
+				  "hideEasing": "linear",
+				  "showMethod": "fadeIn",
+				  "hideMethod": "fadeOut"
+				}
+				window.showMessage = this.showMessage; // make available for all views
 		    },
 
 		    showMessage: function(status, message) {
 		    	// status: success info / warning / danger
-		    	console.log($("#alert-" + status));
-		    	$("#alert-" + status).show();
+		    	if (status == "success") {
+					toastr.success(message);
+				} else if (status == "info") {
+					toastr.info(message);
+				} else if (status == "warning") {
+					toastr.warning(message);
+				} else if (status == "error") {
+					toastr.error(message, null, {timeOut: 0}); //don't fade out
+				}
 		    },
 
 			render: function() {
 				$(this.el).html(_.template(indexTemplate));
-				this.showMessage("success");
 			}
 		});
 		return new indexView;
